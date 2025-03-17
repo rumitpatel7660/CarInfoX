@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CarInfoX</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Add AOS library for scroll animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        /* Add custom styles to prevent horizontal scrolling */
+        body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
+        /* Ensure content stays within viewport */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        @media (min-width: 640px) {
+            .container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+                max-width: 1280px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Ensure charts are responsive */
+        canvas {
+            max-width: 100%;
+        }
+
+        /* Adjust grid gaps for smaller screens */
+        @media (max-width: 640px) {
+            .grid {
+                gap: 1rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800">
+
+    <!-- Navbar section-->
+    {% include 'navbar.html' %}
+
+    <!-- Dashboard Header -->
+    <div class="relative overflow-hidden min-h-[500px] flex items-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:24px_24px]"></div>
+            <!-- Animated circles -->
+            <div class="absolute top-20 left-20 w-48 h-48 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+            <div class="absolute top-40 right-20 w-56 h-56 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute bottom-20 left-1/2 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="relative w-full z-10">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Left Content -->
+                    <div class="text-center lg:text-left" data-aos="fade-right">
+                        <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl tracking-tight">
+                            <span class="block">Analytics Dashboard</span>
+                            <span class="block text-blue-200 text-2xl sm:text-3xl mt-3 font-medium">Comprehensive Vehicle Data Insights</span>
+                        </h1>
+                        <p class="mt-6 text-xl text-blue-100 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            Track market trends, analyze pricing patterns, and gain valuable insights into the automotive industry with our advanced analytics platform. Make data-driven decisions with confidence.
+                        </p>
+                        <div class="mt-10 flex flex-wrap justify-center lg:justify-start gap-4">
+                            <div class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
+                                <i class="fas fa-chart-bar mr-2"></i>
+                                Real-time Analytics
+                                <span class="ml-2 text-xs bg-green-500/20 px-2 py-1 rounded-full">Live</span>
+                            </div>
+                            <div class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
+                                <i class="fas fa-database mr-2"></i>
+                                Data Insights
+                                <span class="ml-2 text-xs bg-purple-500/20 px-2 py-1 rounded-full">AI</span>
+                            </div>
+                        </div>
+                        <!-- Added Feature Highlights with Enhanced Design -->
+                        <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                                <i class="fas fa-bolt text-yellow-400 text-2xl mb-3"></i>
+                                <p class="text-white text-sm font-medium">Real-time Updates</p>
+                                <p class="text-blue-200 text-xs mt-1">Instant data refresh</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                                <i class="fas fa-shield-alt text-green-400 text-2xl mb-3"></i>
+                                <p class="text-white text-sm font-medium">Secure Data</p>
+                                <p class="text-blue-200 text-xs mt-1">Enterprise-grade security</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                                <i class="fas fa-brain text-purple-400 text-2xl mb-3"></i>
+                                <p class="text-white text-sm font-medium">AI Powered</p>
+                                <p class="text-blue-200 text-xs mt-1">Smart predictions</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                                <i class="fas fa-chart-pie text-blue-400 text-2xl mb-3"></i>
+                                <p class="text-white text-sm font-medium">Advanced Analytics</p>
+                                <p class="text-blue-200 text-xs mt-1">Deep insights</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Content with Enhanced Glass Effect -->
+                    <div class="hidden lg:block relative" data-aos="fade-left">
+                        <div class="relative mx-auto w-full max-w-md backdrop-blur-md bg-white/10 p-8 rounded-2xl shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-500">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-white/5 rounded-xl"></div>
+                                <div class="relative p-6 text-white">
+                                    <div class="flex items-center justify-center mb-6">
+                                        <i class="fas fa-chart-pie text-6xl text-white/90"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-center mb-3">Real-time Insights</h3>
+                                    <p class="text-base text-blue-100 text-center leading-relaxed">
+                                        Advanced analytics and data visualization for better decision making
+                                    </p>
+                                    <div class="mt-8 grid grid-cols-2 gap-6">
+                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                            <div class="text-3xl font-bold text-white">{{ total_cars }}</div>
+                                            <div class="text-sm text-blue-200 mt-1">Total Cars</div>
+                                        </div>
+                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                            <div class="text-3xl font-bold text-white">{{ total_companies }}</div>
+                                            <div class="text-sm text-blue-200 mt-1">Companies</div>
+                                        </div>
+                                    </div>
+                                    <!-- Additional Stats -->
+                                    <div class="mt-6 grid grid-cols-2 gap-6">
+                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                            <div class="text-3xl font-bold text-white">{{ avg_price }}</div>
+                                            <div class="text-sm text-blue-200 mt-1">Avg. Price</div>
+                                        </div>
+                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                            <div class="text-3xl font-bold text-white">{{ avg_mileage }}</div>
+                                            <div class="text-sm text-blue-200 mt-1">Avg. Mileage</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Enhanced Decorative Elements -->
+                        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse blur-xl"></div>
+                        <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-blue-300 rounded-full opacity-20 animate-pulse delay-150 blur-xl"></div>
+                        <div class="absolute top-1/2 right-1/4 w-24 h-24 bg-purple-400 rounded-full opacity-20 animate-pulse delay-300 blur-xl"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 sm:px-6 -mt-8">
+        <!-- Dashboard Overview Section -->
+        <div class="mb-8 text-center" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Comprehensive Vehicle Market Analysis</h2>
+            <p class="text-gray-600 max-w-3xl mx-auto">
+                Explore detailed insights into the automotive market with our advanced analytics dashboard. 
+                Track trends, compare metrics, and make data-driven decisions with real-time updates and 
+                comprehensive market analysis.
+            </p>
+            <div class="flex items-center justify-center gap-4 mt-6">
+                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                    <i class="fas fa-clock mr-2"></i>Real-time Data
+                </span>
+                <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    <i class="fas fa-check-circle mr-2"></i>Verified Metrics
+                </span>
+                <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                    <i class="fas fa-chart-line mr-2"></i>Market Trends
+                </span>
+            </div>
+        </div>
+
+        <!-- Quick Stats Cards with Enhanced Design -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8" data-aos="fade-up">
+            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-16 -mt-16 transition-all duration-300 group-hover:bg-blue-100"></div>
+                <div class="relative">
+                    <div class="flex items-center">
+                        <div class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg">
+                            <i class="fas fa-car text-white text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <div class="flex items-center">
+                                <p class="text-gray-500 text-sm font-medium">Total Cars</p>
+                                <div class="ml-2 group relative">
+                                    <i class="fas fa-info-circle text-gray-400 cursor-help"></i>
+                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                        Total number of vehicles in our database
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-gray-800">{{ total_cars }}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>12%</span>
+                                <span class="text-xs text-gray-400 ml-2">vs last month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-xs text-gray-400 flex items-center">
+                        <i class="fas fa-clock mr-1"></i>
+                        Updated 5 minutes ago
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg">
+                        <i class="fas fa-building text-white text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm font-medium">Total Companies</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ total_companies }}</p>
+                        <div class="flex items-center mt-1">
+                            <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>8%</span>
+                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm font-medium">Avg. Price</p>
+                        <p class="text-2xl font-bold text-gray-800">₹{{ avg_price }}</p>
+                        <div class="flex items-center mt-1">
+                            <span class="text-xs text-red-500"><i class="fas fa-arrow-down mr-1"></i>3%</span>
+                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-4 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg">
+                        <i class="fas fa-tachometer-alt text-white text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm font-medium">Avg. Mileage</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ avg_mileage }} kmpl</p>
+                        <div class="flex items-center mt-1">
+                            <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>5%</span>
+                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Section: Market Summary -->
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Market Summary</h2>
+                    <p class="text-gray-500 mt-1">Quick overview of key market indicators</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                        <i class="fas fa-arrow-up mr-1"></i>Market Up
+                    </span>
+                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
+                        <i class="fas fa-ellipsis-v text-gray-500"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Market Growth</h3>
+                        <span class="text-green-500">+24%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 rounded-full" style="width: 75%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Strong growth in Q4 2023</p>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Consumer Confidence</h3>
+                        <span class="text-blue-500">82%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500 rounded-full" style="width: 82%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">High buyer confidence level</p>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Market Share</h3>
+                        <span class="text-purple-500">65%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 rounded-full" style="width: 65%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Leading market position</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
+            <!-- Price Trends Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100 relative overflow-hidden" data-aos="fade-right">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-bl-full -mr-20 -mt-20 z-0"></div>
+                <div class="relative z-10">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                        <div class="mb-4 sm:mb-0">
+                            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Price Trends by Year</h2>
+                            <p class="text-sm text-gray-500 mt-1">Historical price analysis across years</p>
+                        </div>
+                        <select id="companyFilter" class="w-full sm:w-auto border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                            <option value="all">All Companies</option>
+                            {% for company in companies %}
+                            <option value="{{ company }}">{{ company }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4" style="height: 300px;">
+                        <canvas id="priceTrendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Car Companies Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-left">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Popular Car Companies</h2>
+                    <p class="text-sm text-gray-500 mt-1">Market share distribution by manufacturer</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 mt-6" style="height: 300px;">
+                    <canvas id="companyDistChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Fuel Type Distribution Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-right">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Fuel Type Distribution</h2>
+                        <p class="text-sm text-gray-500 mt-1">Analysis of fuel preferences in the market</p>
+                    </div>
+                    <select id="fuelCompanyFilter" class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                        <option value="all">All Companies</option>
+                        {% for company in companies %}
+                        <option value="{{ company }}">{{ company }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4" style="height: 300px;">
+                    <canvas id="fuelTypeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Region Distribution Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-left">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Sales by Region</h2>
+                        <p class="text-sm text-gray-500 mt-1">Regional sales distribution and pricing analysis</p>
+                    </div>
+                    <select id="regionCompanyFilter" class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                        <option value="all">All Companies</option>
+                        {% for company in companies %}
+                        <option value="{{ company }}">{{ company }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4" style="height: 300px;">
+                    <canvas id="regionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Section: Latest Updates -->
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Latest Updates</h2>
+                    <p class="text-gray-500 mt-1">Recent changes in the market</p>
+                </div>
+                <button class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                    View All
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0 mb-4 sm:mb-0">
+                        <i class="fas fa-car-side text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="w-full sm:ml-4">
+                        <h3 class="font-semibold text-gray-800">New Model Launch</h3>
+                        <p class="text-sm text-gray-500">Tesla Model Y now available in the market</p>
+                    </div>
+                    <span class="mt-2 sm:mt-0 sm:ml-auto text-xs text-gray-400">2 hours ago</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0 mb-4 sm:mb-0">
+                        <i class="fas fa-leaf text-green-600 text-xl"></i>
+                    </div>
+                    <div class="w-full sm:ml-4">
+                        <h3 class="font-semibold text-gray-800">Sustainability Report</h3>
+                        <p class="text-sm text-gray-500">15% reduction in carbon emissions</p>
+                    </div>
+                    <span class="mt-2 sm:mt-0 sm:ml-auto text-xs text-gray-400">5 hours ago</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0 mb-4 sm:mb-0">
+                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="w-full sm:ml-4">
+                        <h3 class="font-semibold text-gray-800">Market Analysis</h3>
+                        <p class="text-sm text-gray-500">Q4 market report now available</p>
+                    </div>
+                    <span class="mt-2 sm:mt-0 sm:ml-auto text-xs text-gray-400">1 day ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Section: Market Insights -->
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Market Insights</h2>
+                    <p class="text-gray-500 mt-1">Latest trends and market analysis. 
+                        <a href="https://www.mordorintelligence.com/industry-reports/analysis-of-automobile-industry-in-india" target="_blank" class="text-blue-500 hover:underline">Learn more</a>
+                    </p>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                        <i class="fas fa-arrow-trend-up mr-1"></i>Growing Market
+                    </span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        <i class="fas fa-chart-line mr-1"></i>Trending
+                    </span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-trophy text-blue-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Top Performers</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Tesla Model 3</span>
+                            <span class="text-blue-600">+45%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">BMW i4</span>
+                            <span class="text-blue-600">+38%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Audi e-tron</span>
+                            <span class="text-blue-600">+31%</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-leaf text-green-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Sustainability Trends</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Electric Vehicles</span>
+                            <span class="text-green-600">+62%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Hybrid Models</span>
+                            <span class="text-green-600">+28%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Carbon Footprint</span>
+                            <span class="text-red-600">-15%</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-lightbulb text-purple-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Innovation Metrics</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">AI Features</span>
+                            <span class="text-purple-600">+85%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Smart Tech</span>
+                            <span class="text-purple-600">+55%</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="text-gray-600">Safety Systems</span>
+                            <span class="text-purple-600">+42%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Section: Key Metrics -->
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Key Performance Metrics</h2>
+            <p class="text-gray-500 mt-1">Explore detailed key metrics for the automotive industry. 
+                <a href="https://www.marvilano.com/post/compendium-of-48-most-useful-kpis-for-the-automotive-sector" target="_blank" class="text-blue-500 hover:underline">More details</a>
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-blue-600"><i class="fas fa-users text-2xl"></i></div>
+                        <div class="text-blue-600 text-sm font-medium">+15%</div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">User Engagement</h3>
+                    <p class="text-gray-600 mt-2">Increased user interaction with platform features</p>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-green-600"><i class="fas fa-chart-bar text-2xl"></i></div>
+                        <div class="text-green-600 text-sm font-medium">+23%</div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Market Growth</h3>
+                    <p class="text-gray-600 mt-2">Steady increase in market presence and share</p>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-purple-600"><i class="fas fa-clock text-2xl"></i></div>
+                        <div class="text-purple-600 text-sm font-medium">-8%</div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Response Time</h3>
+                    <p class="text-gray-600 mt-2">Improved system response and processing</p>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-yellow-600"><i class="fas fa-star text-2xl"></i></div>
+                        <div class="text-yellow-600 text-sm font-medium">4.8/5</div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">User Satisfaction</h3>
+                    <p class="text-gray-600 mt-2">High user satisfaction and retention rate</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PowerBI Dashboard with Enhanced Design -->
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Advanced Analytics</h2>
+                    <p class="text-gray-500 mt-1">Detailed insights and interactive data visualization</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="mt-4 w-full overflow-hidden rounded-lg shadow-lg">
+                <div class="relative" style="padding-top: 40%;">
+                    <iframe title="Cars Analysis" 
+                        class="absolute top-0 left-0 w-full h-full rounded-lg"
+                        src="https://app.powerbi.com/reportEmbed?reportId=4b2a1499-5b18-407a-b864-9a06af0466a4&autoAuth=true&ctid=ad1106cc-c3d8-47da-9e8e-bbf2a9512edd" 
+                        frameborder="0" 
+                        allowFullScreen="true">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Footer -->
+    {% include 'footer.html' %}
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Add blob animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Price Trends Chart with Company Filter
+            const allPriceData = JSON.parse('{{ price_data|tojson|safe }}');
+            const priceCtx = document.getElementById('priceTrendsChart').getContext('2d');
+            let priceTrendsChart;
+
+            function updatePriceTrendsChart(company) {
+                const filteredData = company === 'all' 
+                    ? allPriceData 
+                    : allPriceData.filter(item => item.company === company);
+
+                // Calculate max price for setting the y-axis scale
+                const maxPrice = Math.max(...filteredData.map(item => item.avg_price));
+                const yAxisMax = Math.ceil(maxPrice * 1.1 / 100000) * 100000; // Round to nearest 100,000
+
+                if (priceTrendsChart) {
+                    priceTrendsChart.destroy();
+                }
+
+                priceTrendsChart = new Chart(priceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: filteredData.map(item => item._id),
+                        datasets: [{
+                            label: 'Average Price (₹)',
+                            data: filteredData.map(item => item.avg_price),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: yAxisMax,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + (value / 100000).toFixed(1) + 'L';
+                                    },
+                                    stepSize: yAxisMax / 10 // Create 10 steps on y-axis
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed.y;
+                                        return '₹' + (value / 100000).toFixed(2) + ' Lakhs';
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize price trends chart with all data
+            updatePriceTrendsChart('all');
+
+            // Add event listener for company filter
+            document.getElementById('companyFilter').addEventListener('change', function(e) {
+                updatePriceTrendsChart(e.target.value);
+            });
+
+            // Company Distribution Chart
+            const companyData = JSON.parse('{{ company_data|tojson|safe }}');
+            const companyCtx = document.getElementById('companyDistChart').getContext('2d');
+            new Chart(companyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: companyData.map(item => item._id),
+                    datasets: [{
+                        data: companyData.map(item => item.count),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(201, 203, 207, 0.6)',
+                            'rgba(255, 99, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(201, 203, 207, 1)',
+                            'rgba(255, 99, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Fuel Type Distribution Chart with Company Filter
+            const allFuelData = JSON.parse('{{ fuel_data|tojson|safe }}');
+            const fuelCtx = document.getElementById('fuelTypeChart').getContext('2d');
+            let fuelTypeChart;
+
+            function updateFuelTypeChart(company) {
+                if (fuelTypeChart) {
+                    fuelTypeChart.destroy();
+                }
+
+                let chartData;
+                if (company === 'all') {
+                    // Aggregate all fuel types across companies
+                    const fuelCounts = {};
+                    allFuelData.forEach(item => {
+                        const fuelType = item._id;
+                        if (!fuelCounts[fuelType]) {
+                            fuelCounts[fuelType] = 0;
+                        }
+                        fuelCounts[fuelType] += item.count;
+                    });
+
+                    chartData = {
+                        labels: Object.keys(fuelCounts),
+                        data: Object.values(fuelCounts)
+                    };
+                } else {
+                    // Filter data for specific company
+                    const companyData = allFuelData.filter(item => item.company === company);
+                    chartData = {
+                        labels: companyData.map(item => item._id),
+                        data: companyData.map(item => item.count)
+                    };
+                }
+
+                fuelTypeChart = new Chart(fuelCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            data: chartData.data,
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.6)',  // Blue for Petrol
+                                'rgba(255, 99, 132, 0.6)',   // Red for Diesel
+                                'rgba(255, 206, 86, 0.6)',   // Yellow for CNG
+                                'rgba(75, 192, 192, 0.6)',   // Green for Electric
+                                'rgba(153, 102, 255, 0.6)',  // Purple for Hybrid
+                                'rgba(255, 159, 64, 0.6)'    // Orange for Others
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 10,
+                                top: 0,
+                                bottom: 0
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 10,
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${context.label}: ${value} cars (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize fuel type chart with all data
+            updateFuelTypeChart('all');
+
+            // Add event listener for fuel company filter
+            document.getElementById('fuelCompanyFilter').addEventListener('change', function(e) {
+                updateFuelTypeChart(e.target.value);
+            });
+
+            // Region Distribution Chart
+            const regionData = JSON.parse('{{ region_data|tojson|safe }}');
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            let regionChart;
+
+            function updateRegionChart(company) {
+                if (regionChart) {
+                    regionChart.destroy();
+                }
+
+                let chartData;
+                if (company === 'all') {
+                    chartData = {
+                        labels: regionData.map(item => item._id),
+                        counts: regionData.map(item => item.count),
+                        avgPrices: regionData.map(item => item.total_avg_price)
+                    };
+                } else {
+                    chartData = {
+                        labels: [],
+                        counts: [],
+                        avgPrices: []
+                    };
+                    
+                    regionData.forEach(region => {
+                        const companyData = region.company_data.find(cd => cd.company === company);
+                        if (companyData) {
+                            chartData.labels.push(region._id);
+                            chartData.counts.push(companyData.count);
+                            chartData.avgPrices.push(companyData.avg_price);
+                        }
+                    });
+                }
+
+                // Calculate max values for better scaling
+                const maxCount = Math.max(...chartData.counts);
+                const maxPrice = Math.max(...chartData.avgPrices);
+                const yAxisMax = Math.ceil(maxPrice * 1.1 / 100000) * 100000;
+
+                regionChart = new Chart(regionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                label: 'Number of Sales',
+                                data: chartData.counts,
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',  // Blue
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 2,
+                                borderRadius: 6,
+                                yAxisID: 'y',
+                                order: 2
+                            },
+                            {
+                                label: 'Average Price',
+                                data: chartData.avgPrices,
+                                type: 'line',
+                                borderColor: 'rgba(220, 38, 38, 0.8)',  // Red
+                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                                borderWidth: 3,
+                                pointBackgroundColor: 'rgba(220, 38, 38, 1)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                fill: true,
+                                tension: 0.3,
+                                yAxisID: 'y1',
+                                order: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                position: 'left',
+                                grid: {
+                                    drawBorder: false,
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    },
+                                    color: 'rgba(0, 0, 0, 0.7)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Number of Sales',
+                                    color: 'rgba(0, 0, 0, 0.7)',
+                                    font: {
+                                        size: 12,
+                                        weight: '500'
+                                    }
+                                }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right',
+                                max: yAxisMax,
+                                grid: {
+                                    drawOnChartArea: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    },
+                                    color: 'rgba(220, 38, 38, 0.8)',
+                                    callback: function(value) {
+                                        return '₹' + (value / 100000).toFixed(1) + 'L';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Average Price (₹)',
+                                    color: 'rgba(220, 38, 38, 0.8)',
+                                    font: {
+                                        size: 12,
+                                        weight: '500'
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    },
+                                    color: 'rgba(0, 0, 0, 0.7)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15,
+                                    font: {
+                                        size: 11
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#1f2937',
+                                bodyColor: '#1f2937',
+                                bodyFont: {
+                                    size: 12
+                                },
+                                borderColor: 'rgba(0, 0, 0, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        if (context.dataset.label === 'Average Price') {
+                                            return `Average Price: ₹${(value / 100000).toFixed(2)}L`;
+                                        }
+                                        return `Sales: ${value} units`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize region chart with all data
+            updateRegionChart('all');
+
+            // Add event listener for region company filter
+            document.getElementById('regionCompanyFilter').addEventListener('change', function(e) {
+                updateRegionChart(e.target.value);
+            });
+        });
+
+        // Add hover effects for cards
+        document.querySelectorAll('.rounded-xl').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Enhanced hover effects
+        document.querySelectorAll('.hover-effect').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.classList.add('transform', 'scale-105', 'shadow-lg');
+            });
+            element.addEventListener('mouseleave', function() {
+                this.classList.remove('transform', 'scale-105', 'shadow-lg');
+            });
+        });
+    </script>
+</body>
+</html>

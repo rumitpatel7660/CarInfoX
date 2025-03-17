@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My History - CarInfoX</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .activity-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #1a202c 30%, #2c5282 70%);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid #3b82f6;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -0.5rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+
+        .review-card {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .spec-item {
+            background: #f8fafc;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .comparison-metrics {
+            background: #eef2ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    {% include 'navbar.html' %}
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- User Profile Section -->
+        <div id="user-profile-section" class="mb-8">
+            <div class="section-header flex items-center justify-between">
+                <h2 class="text-2xl font-bold">User Profile</h2>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300">
+                    Edit Profile
+                </button>
+            </div>
+            <div class="activity-card p-6">
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <h3 class="text-xl font-semibold">{{ user.name }}</h3>
+                        <p class="text-gray-600">{{ user.email }}</p>
+                        <p class="text-gray-500">Member since: {{ user.join_date }}</p>
+                    </div>
+                </div>
+                <!-- User Statistics -->
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">{{ user.stats.total_comparisons }}</div>
+                        <div class="text-sm text-gray-600">Comparisons</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600">{{ user.stats.total_reviews }}</div>
+                        <div class="text-sm text-gray-600">Reviews</div>
+                    </div>
+                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-600">{{ "%.1f"|format(user.stats.avg_rating) }}</div>
+                        <div class="text-sm text-gray-600">Avg Rating</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600">{{ user.stats.last_activity }}</div>
+                        <div class="text-sm text-gray-600">Last Activity</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Car Comparisons Section -->
+        <div class="mb-8">
+            <div class="section-header">
+                <h2 class="text-2xl font-bold">Saved Comparisons</h2>
+            </div>
+            <div class="grid grid-cols-1 gap-6">
+                {% for comparison in comparisons %}
+                <div class="activity-card p-6" data-comparison-id="{{ comparison.id }}">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Comparison #{{ comparison.id }}</h3>
+                        <span class="text-gray-500 text-sm">{{ comparison.date }}</span>
+                    </div>
+                    
+                    <!-- Cars Overview -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="text-center flex-1">
+                            <p class="mt-2 font-medium text-lg">{{ comparison.car1_name }}</p>
+                        </div>
+                        <div class="text-2xl text-blue-500 mx-4">VS</div>
+                        <div class="text-center flex-1">
+                            <p class="mt-2 font-medium text-lg">{{ comparison.car2_name }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Metrics -->
+                    <div class="comparison-metrics">
+                        <h4 class="font-semibold mb-3">Comparison Summary</h4>
+                        <div class="metric-item">
+                            <span>Price Difference:</span>
+                            <span class="font-medium">₹{{ "%.2f"|format(comparison.price_difference) }} ({{ comparison.price_difference_percentage }}%)</span>
+                        </div>
+                        <div class="metric-item">
+                            <span>Mileage Difference:</span>
+                            <span class="font-medium">{{ "%.1f"|format(comparison.mileage_difference) }} kmpl</span>
+                        </div>
+                        <div class="metric-item">
+                            <span>Power Difference:</span>
+                            <span class="font-medium">{{ comparison.power_difference }} bhp</span>
+                        </div>
+                    </div>
+
+                    <!-- Car Specifications -->
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-3">Detailed Specifications</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Car 1 Specs -->
+                            <div>
+                                <h5 class="font-medium mb-2">{{ comparison.car1_name }}</h5>
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Engine:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.engine }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Mileage:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.mileage }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Power:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.max_power }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Torque:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.torque }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Fuel Type:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.fuel_type }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Transmission:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.transmission }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Seats:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.seats }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Price:</span>
+                                        <span class="font-medium">₹{{ comparison.car1_details.price }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Year:</span>
+                                        <span class="font-medium">{{ comparison.car1_details.year }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Car 2 Specs -->
+                            <div>
+                                <h5 class="font-medium mb-2">{{ comparison.car2_name }}</h5>
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Engine:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.engine }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Mileage:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.mileage }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Power:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.max_power }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Torque:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.torque }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Fuel Type:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.fuel_type }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Transmission:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.transmission }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Seats:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.seats }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Price:</span>
+                                        <span class="font-medium">₹{{ comparison.car2_details.price }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Year:</span>
+                                        <span class="font-medium">{{ comparison.car2_details.year }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end">
+                        <button class="text-blue-500 hover:text-blue-600 mr-4">View Details</button>
+                        <button class="text-red-500 hover:text-red-600">Delete</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Car Reviews Section -->
+        <div class="mb-8">
+            <div class="section-header">
+                <h2 class="text-2xl font-bold">My Car Reviews</h2>
+            </div>
+            <div class="space-y-6">
+                {% for review in reviews %}
+                <div class="activity-card p-6 review-card" data-review-id="{{ review.id }}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold">{{ review.car_name }}</h3>
+                            <div class="flex items-center mt-1">
+                                {% for i in range(review.rating) %}
+                                <i class="fas fa-star text-yellow-400"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <span class="text-gray-500 text-sm">{{ review.date }}</span>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-medium mb-2">{{ review.title }}</h4>
+                        <p class="text-gray-700">{{ review.comment }}</p>
+                        
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h5 class="font-medium text-green-600 mb-2">Pros</h5>
+                                <p class="text-gray-700">{{ review.pros }}</p>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-red-600 mb-2">Cons</h5>
+                                <p class="text-gray-700">{{ review.cons }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>Ownership Duration: {{ review.ownership_duration }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <button class="text-blue-500 hover:text-blue-600 mr-4">Edit</button>
+                        <button class="text-red-500 hover:text-red-600">Delete</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% include 'footer.html' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle profile edit button
+            const editProfileBtn = document.querySelector('.section-header button');
+            editProfileBtn.addEventListener('click', function() {
+                const nameElement = document.querySelector('.activity-card h3');
+                const emailElement = document.querySelector('.activity-card p');
+                
+                const currentName = nameElement.textContent;
+                const currentEmail = emailElement.textContent;
+
+                const newName = prompt('Enter new name:', currentName);
+                const newEmail = prompt('Enter new email:', currentEmail);
+
+                if (newName && newEmail) {
+                    const formData = new FormData();
+                    formData.append('name', newName);
+                    formData.append('email', newEmail);
+
+                    fetch('/update_profile', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            nameElement.textContent = newName;
+                            emailElement.textContent = newEmail;
+                            alert('Profile updated successfully!');
+                        } else {
+                            alert('Failed to update profile: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating profile');
+                    });
+                }
+            });
+
+            // Handle comparison delete buttons
+            const comparisonCards = document.querySelectorAll('.activity-card');
+            comparisonCards.forEach(card => {
+                const deleteBtn = card.querySelector('button:last-child');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to delete this comparison?')) {
+                            const comparisonId = card.dataset.comparisonId;
+                            fetch(`/delete_comparison/${comparisonId}`, {
+                                method: 'DELETE'
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    card.remove();
+                                    alert('Comparison deleted successfully!');
+                                } else {
+                                    alert('Failed to delete comparison: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while deleting comparison');
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Handle review delete buttons
+            const reviewCards = document.querySelectorAll('.review-card');
+            reviewCards.forEach(card => {
+                const deleteBtn = card.querySelector('button:last-child');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to delete this review?')) {
+                            const reviewId = card.dataset.reviewId;
+                            fetch(`/delete_review/${reviewId}`, {
+                                method: 'DELETE'
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    card.remove();
+                                    alert('Review deleted successfully!');
+                                } else {
+                                    alert('Failed to delete review: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while deleting review');
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Handle view comparison details
+            const viewDetailsBtns = document.querySelectorAll('.activity-card button:first-child');
+            viewDetailsBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const comparisonId = btn.closest('.activity-card').dataset.comparisonId;
+                    window.location.href = `/comparison/${comparisonId}`;
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

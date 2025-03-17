@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Review - CarInfoX</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .star-rating {
+            display: inline-flex;
+            flex-direction: row-reverse;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #d1d5db;
+            padding: 0 0.1rem;
+            transition: color 0.2s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover~label,
+        .star-rating input:checked~label {
+            color: #fbbf24;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: #f1f5f9;
+            border-color: #3b82f6;
+        }
+
+        .review-stats {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Profile Dropdown Styles */
+        .profile-dropdown {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
+
+        .profile-button {
+            background: white;
+            border-radius: 9999px;
+            padding: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .profile-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 240px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .profile-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .profile-info h3 {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .profile-info p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .profile-menu-items {
+            padding: 0.5rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold gradient-text mb-4">Car Reviews</h1>
+            <p class="text-gray-600 text-lg">Share your experience and help others make informed decisions</p>
+        </div>
+
+        <!-- Review Statistics -->
+        <div class="review-stats mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        4.8/5
+                    </div>
+                    <p class="text-gray-600">Average Rating</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">
+                        <i class="fas fa-comments"></i>
+                        2.5K+
+                    </div>
+                    <p class="text-gray-600">Total Reviews</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">
+                        <i class="fas fa-car"></i>
+                        500+
+                    </div>
+                    <p class="text-gray-600">Cars Reviewed</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">
+                        <i class="fas fa-users"></i>
+                        1.2K+
+                    </div>
+                    <p class="text-gray-600">Active Reviewers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Form -->
+        <div class="max-w-3xl mx-auto">
+            <div class="review-card p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Write Your Review</h2>
+                <form id="reviewForm" class="space-y-6" action="/submit_review" method="POST">
+                    <!-- Car Selection -->
+                    <div>
+                        <label for="carSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Car</label>
+                        <div class="relative">
+                            <select id="carSelect" name="car" required
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-10">
+                                <option value="select car">Choose a car...</option>
+                                <option value="Hyundai Creta">Hyundai Creta</option>
+                                <option value="Audi A5">Audi A5</option>
+                                <option value="Toyota Innova Cresta">Toyota Innova Cresta</option>
+                                <option value="BMW X1">BMW X1</option>
+                                <option value="Tata Harriar">Tata Harriar</option>
+                                <option value="MG Hector">MG Hector</option>
+                                <option value="Maruti Suzuki Swift">Maruti Suzuki Swift</option>
+                                <option value="Mahindra Thar">Mahindra Thar</option>
+                                <option value="Ford EcoSport">Ford EcoSport</option>
+                                <option value="Jeep Compass">Jeep Compass</option>
+                                <option value="Volkswagen Polo">Volkswagen Polo</option>
+                                <option value="Skoda Octavia">Skoda Octavia</option>
+                                <option value="Renault Duster">Renault Duster</option>
+                                <option value="Nissan Magnite">Nissan Magnite</option>
+                                <option value="Mercedes-Benz E-Class">Mercedes-Benz E-Class</option>
+                                <option value="Land Rover Range Rover">Land Rover Range Rover</option>
+                                <option value="Jaguar F-Type">Jaguar F-Type</option>
+                                <option value="Hyundai i20">Hyundai i20</option>
+                                <option value="Honda City">Honda City</option>
+                                <option value="Kia Seltos">Kia Seltos</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-car text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Overall Rating</label>
+                        <div class="star-rating">
+                            <input type="radio" name="rating" value="5" id="star5">
+                            <label for="star5">★</label>
+                            <input type="radio" name="rating" value="4" id="star4">
+                            <label for="star4">★</label>
+                            <input type="radio" name="rating" value="3" id="star3">
+                            <label for="star3">★</label>
+                            <input type="radio" name="rating" value="2" id="star2">
+                            <label for="star2">★</label>
+                            <input type="radio" name="rating" value="1" id="star1">
+                            <label for="star1">★</label>
+                        </div>
+                    </div>
+
+                    <!-- Review Title -->
+                    <div>
+                        <label for="reviewTitle" class="block text-sm font-medium text-gray-700 mb-2">Review
+                            Title</label>
+                        <input type="text" id="reviewTitle" name="title" required
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Give your review a catchy title">
+                    </div>
+
+                    <!-- Review Content -->
+                    <div>
+                        <label for="reviewContent" class="block text-sm font-medium text-gray-700 mb-2">Your
+                            Review</label>
+                        <textarea id="reviewContent" name="content" rows="6" required
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Share your detailed experience with the car..."></textarea>
+                    </div>
+
+                    <!-- Pros and Cons -->
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <label for="pros" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>Pros
+                            </label>
+                            <textarea id="pros" name="pros" rows="3"
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="What do you like about this car?"></textarea>
+                        </div>
+                        <div class="feature-item">
+                            <label for="cons" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-times-circle text-red-500 mr-2"></i>Cons
+                            </label>
+                            <textarea id="cons" name="cons" rows="3"
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="What could be improved?"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Ownership Duration -->
+                    <div>
+                        <label for="ownershipDuration" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-clock text-blue-500 mr-2"></i>How long have you owned this car?
+                        </label>
+                        <select id="ownershipDuration" name="ownershipDuration" required
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Select duration...</option>
+                            <option value="less_than_6_months">Less than 6 months</option>
+                            <option value="6_months_to_1_year">6 months to 1 year</option>
+                            <option value="1_to_3_years">1 to 3 years</option>
+                            <option value="3_to_5_years">3 to 5 years</option>
+                            <option value="more_than_5_years">More than 5 years</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit"
+                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Reviews Section -->
+        <div class="mt-16">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Recent Reviews</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sample Review Card 1 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">John Doe</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Excellent Family Car</h4>
+                    <p class="text-gray-600 text-sm mb-4">Great comfort and safety features. Perfect for family trips.
+                    </p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Honda City</span>
+                        <span>2 days ago</span>
+                    </div>
+                </div>
+
+                <!-- Sample Review Card 2 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-green-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">Sarah Wilson</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Sporty and Reliable</h4>
+                    <p class="text-gray-600 text-sm mb-4">Great performance and handling. Fuel efficiency could be
+                        better.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Toyota Camry</span>
+                        <span>1 week ago</span>
+                    </div>
+                </div>
+
+                <!-- Sample Review Card 3 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-purple-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">Mike Johnson</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Luxury at its Best</h4>
+                    <p class="text-gray-600 text-sm mb-4">Premium features and excellent build quality. Worth every
+                        penny.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>BMW 5 Series</span>
+                        <span>3 days ago</span>
+                    </div>
+                </div>
+
+                <!-- Sample Review Card 4 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-red-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">Emily Brown</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Good but Not Perfect</h4>
+                    <p class="text-gray-600 text-sm mb-4">Comfortable ride but maintenance costs are high.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Mercedes C-Class</span>
+                        <span>5 days ago</span>
+                    </div>
+                </div>
+
+                <!-- Sample Review Card 5 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">David Lee</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Best SUV in its Class</h4>
+                    <p class="text-gray-600 text-sm mb-4">Spacious interior, great off-road capability, and reliable.
+                    </p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Toyota RAV4</span>
+                        <span>1 day ago</span>
+                    </div>
+                </div>
+
+                <!-- Sample Review Card 6 -->
+                <div class="review-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-indigo-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-800">Lisa Chen</h3>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="font-medium text-gray-800 mb-2">Efficient and Stylish</h4>
+                    <p class="text-gray-600 text-sm mb-4">Great fuel economy and modern design. Back seat could be more
+                        spacious.</p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Hyundai Elantra</span>
+                        <span>4 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage"
+        class="hidden fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>Review submitted successfully!</span>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage"
+        class="hidden fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+            <span>An error occurred. Please try again.</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include 'footer.html' %}
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/car_review.js') }}"></script>
+    <script>
+        // Profile Dropdown Toggle
+        const profileButton = document.getElementById('profileButton');
+        const profileMenu = document.getElementById('profileMenu');
+
+        profileButton.addEventListener('click', () => {
+            profileMenu.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('active');
+            }
+        });
+
+        // Handle menu item clicks
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Add your navigation logic here
+                console.log('Clicked:', item.querySelector('span').textContent);
+            });
+        });
+
+        //alert box script
+        document.getElementById("reviewForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let formData = new FormData(this); // Get form data
+
+            function cleanInput(text) {
+                text = text.trim();
+                return text.replace(/\n/g, " "); // Replace new lines with space
+            }
+
+            let jsonData = {
+                car: formData.get("car"),
+                rating: formData.get("rating"),
+                title: formData.get("title"),
+                content: formData.get("content"),
+                pros: cleanInput(formData.get("pros")),  // Ensure single string
+                cons: cleanInput(formData.get("cons")),  // Ensure single string
+                ownershipDuration: formData.get("ownershipDuration")
+            };
+
+            fetch("/submit_review", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Review submitted successfully!");
+                        location.reload(); // Optional: Refresh the page after submission
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("An error occurred: " + error);
+                });
+        });
+
+    </script>
+</body>
+
+</html>

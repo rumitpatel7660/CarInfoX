@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarInfoX</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <script src="{{ url_for('static',filename='js/script.js')}}" ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 70px; /* Add padding for fixed navbar */
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%);
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            width: 100%;  /* Changed from 100vw to 100% */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('static/images/homepage.jpg') center/cover no-repeat fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="rgba(255,255,255,0.05)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+            margin-top: -10vh;
+        }
+
+        /* Make all sections full width but prevent overflow */
+        section {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Adjust container max-width and padding */
+        .container {
+            max-width: 1280px;
+            width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            .hero-content {
+                padding: 0 1rem;
+            }
+        }
+
+        .btn-hover:hover {
+            transform: scale(1.05);
+            transition: 0.3s;
+        }
+
+        .car-card {
+            transition: transform 0.3s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            color: #3B82F6;
+            margin-bottom: 1rem;
+        }
+
+        /* Alert box CSS*/
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 250px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .error {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #3B82F6, #2563EB);
+            border-radius: 2px;
+        }
+
+        .card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3B82F6, #2563EB);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-list li {
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .feature-list li:hover {
+            transform: translateX(10px);
+            color: #3B82F6;
+        }
+
+        .feature-list li i {
+            transition: all 0.3s ease;
+        }
+
+        .feature-list li:hover i {
+            transform: scale(1.2);
+            color: #3B82F6;
+        }
+
+        /* Add smooth scroll class */
+        .smooth-scroll {
+            transition: all 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+    <!-- Alert Box -->
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Navbar section-->
+    {% include 'navbar.html' %}
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">Welcome to CarInfoX</h1>
+            <p class="text-xl md:text-2xl text-blue-100 mb-8">Your trusted platform for car comparison and analysis</p>
+            <a href="#features" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Get Started
+            </a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="stats-card" data-aos="fade-up">
+                    <i class="fas fa-users text-4xl mb-4"></i>
+                    <h3 class="text-3xl font-bold">10K+</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stats-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fas fa-car text-4xl mb-4"></i>
+                    <h3 class="text-3xl font-bold">500+</h3>
+                    <p>Vehicles Analyzed</p>
+                </div>
+                <div class="stats-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-chart-line text-4xl mb-4"></i>
+                    <h3 class="text-3xl font-bold">95%</h3>
+                    <p>Accuracy Rate</p>
+                </div>
+                <div class="stats-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-star text-4xl mb-4"></i>
+                    <h3 class="text-3xl font-bold">4.8/5</h3>
+                    <p>User Rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">Explore Our Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="feature-card" data-aos="fade-up">
+                    <i class="fas fa-chart-bar icon"></i>
+                    <h3 class="text-xl font-semibold mb-4">Analytics Dashboard</h3>
+                    <p class="text-gray-600">Interactive charts and deep insights for better decision-making. Track performance metrics in real-time.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fas fa-car icon"></i>
+                    <h3 class="text-xl font-semibold mb-4">Comparison Tool</h3>
+                    <p class="text-gray-600">Compare different vehicles side-by-side with real data. Make informed choices with detailed specifications.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-lightbulb icon"></i>
+                    <h3 class="text-xl font-semibold mb-4">AI Recommendations</h3>
+                    <p class="text-gray-600">Get personalized vehicle recommendations tailored for you. Our AI analyzes your preferences and needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Cars Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">Featured Vehicles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up">
+                    <img src="https://images.unsplash.com/photo-1550355291-bbee04a92027" alt="Car 1" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Tesla Model 3</h3>
+                        <p class="text-gray-600 mb-4">Electric sedan with impressive range and performance.</p>
+                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
+                    </div>
+                </div>
+                <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d" alt="Car 2" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Porsche 911</h3>
+                        <p class="text-gray-600 mb-4">Iconic sports car with unmatched driving experience.</p>
+                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
+                    </div>
+                </div>
+                <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8" alt="Car 3" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">BMW M4</h3>
+                        <p class="text-gray-600 mb-4">High-performance coupe with stunning design.</p>
+                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">What Our Users Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="testimonial-card" data-aos="fade-up">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User 1" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">John Doe</h4>
+                            <p class="text-gray-600">Car Enthusiast</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"CarInfoX helped me make an informed decision about my new car. The comparison tools are amazing!"</p>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="User 2" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Jane Smith</h4>
+                            <p class="text-gray-600">First-time Buyer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"The AI recommendations were spot-on! Found my perfect car within minutes."</p>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User 3" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Mike Johnson</h4>
+                            <p class="text-gray-600">Auto Dealer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"As a dealer, I appreciate the detailed analytics. It helps me understand market trends better."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 text-white relative overflow-hidden" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('static/images/homepage.jpg') center/cover no-repeat fixed;">
+        <!-- Content -->
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h2 class="text-4xl font-bold mb-6" data-aos="fade-up">Ready to Get Started?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto text-blue-100" data-aos="fade-up" data-aos-delay="100">
+                Join thousands of satisfied users who have made better car decisions with CarInfoX.
+            </p>
+            <a href="{{ url_for('login_page') }}"
+                class="inline-block bg-white text-blue-600 font-semibold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 transform hover:scale-105"
+                data-aos="fade-up" data-aos-delay="200">
+                Start Your Journey
+            </a>
+        </div>
+    </section>
+
+    <!-- Include Footer -->
+    {% include 'footer.html' %}
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100,
+            easing: 'ease-in-out'
+        });
+
+        // Smooth scroll function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all links that have hash
+            const links = document.querySelectorAll('a[href^="#"]');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Get navbar height
+                        const navbar = document.querySelector('nav');
+                        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+                        
+                        // Calculate scroll position
+                        const targetPosition = targetElement.offsetTop - navbarHeight - 20;
+                        
+                        // Smooth scroll
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Optimize scroll performance
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (!scrollTimeout) {
+                requestAnimationFrame(function() {
+                    // Add any scroll-based animations here
+                    scrollTimeout = null;
+                });
+                scrollTimeout = true;
+            }
+        });
+
+        // alert box javascript
+        function showMessage(message, type) {
+            let alertBox = document.getElementById("alertBox");
+            alertBox.textContent = message;
+            alertBox.className = "alert " + type;
+            alertBox.style.display = "block";
+
+            setTimeout(() => { alertBox.style.display = "none"; }, 3000);
+        }
+
+        window.onload = function () {
+            {% with messages = get_flashed_messages(with_categories = True) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            showMessage("{{ message }}", "{{ category }}");
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        };
+
+        // Add intersection observer for better scroll performance
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('smooth-scroll');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '20px'
+        });
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+
+</html>
