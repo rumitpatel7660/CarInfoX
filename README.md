@@ -44,8 +44,8 @@ npm start  # or yarn start
 3. Compare prices and locate dealerships.
 
 ## 📬 Contact
-📧 Email: [mrrumitvasoya@example.com](mailto:mrrumitvasoya@email.com)  
-💼 LinkedIn: [My LinkedIn](https://www.linkedin.com/in/rumit-vasoya-03b606281)  
+📧 Email: [mrrumitvasoya@email.com](mailto:mrrumitvasoya@email.com)  
+💼 LinkedIn: [Rumit Vasoya-LinkedIn](https://www.linkedin.com/in/rumit-vasoya-03b606281)  
 
 ---
 
