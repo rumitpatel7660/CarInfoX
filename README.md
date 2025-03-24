@@ -1,6 +1,6 @@
 # 🚗 CarInfoX: Smart Automobile Data
 
-**CarInfoX** is a smart and efficient automobile data platform that provides detailed insights about cars, including specifications, performance data, pricing, and more. Designed for car enthusiasts, buyers, and developers, CarInfoX simplifies the process of accessing comprehensive automobile information.
+**CarInfoX** is a comprehensive automobile data management system designed to provide intelligent insights into vehicle information. This platform offers a centralized solution for storing, analyzing, and visualizing automobile data, enabling users to make informed decisions based on vehicle specifications, performance metrics, and market trends.
 
 ## 🚀 Live Demo
 🔗 [Live Project Link](https://127.0.0.1:5000) 
@@ -17,6 +17,8 @@
 - **Backend:** Python-Flask Framework
 - **Database:** MongoDB Database 
 - **APIs:** Bootstrapef APIs.
+- **Visualization** Chart.js, Microsoft PowerBI
+- **Authentication** JWT, Google OAuth
 
 ## 📷 Preview
 ![Project Screenshot](https://raw.githubusercontent.com/rumitpatel7660/CarInfoX-Smart-Automobile-Data/main/preview.png) *(Upload and replace with actual image)*
