@@ -7,19 +7,25 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from authlib.integrations.flask_client import OAuth
 from functools import wraps
+import os, cv2, PyPDF2, pytesseract, re
+from werkzeug.utils import secure_filename
+from bson import Binary  # Add this import for handling binary data
+from pathlib import Path  # Add this import
+import pandas as pd
+import numpy as np
+import joblib
 
 #from config import Config
 app=Flask(__name__)
 
 #Configuration
-app.config['MONGO_URI']='mongodb://localhost:27017/Major_Project'
+app.config['MONGO_URI']='mongodb+srv://rumitpatel7660:Rumit%402003@carinfoxx.aqmgmdx.mongodb.net/CARINFOX'
 app.config['SECRET_KEY'] = 'db0874988cf36807a8c6e0e0ba2c6f60'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = '21it438@bvmengineering.ac.in'
 app.config['MAIL_PASSWORD'] = 'Rumit@2003'
-
 # Google OAuth Configuration
 app.config['GOOGLE_CLIENT_ID'] = '1064395158995-4t434aq68r2ek64fj14mdsncq3o5f2gu.apps.googleusercontent.com'
 app.config['GOOGLE_CLIENT_SECRET'] = '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'
@@ -33,6 +39,15 @@ review=mongo.db.Review_Data
 mail=Mail(app)
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 oauth = OAuth(app)
+
+# Update the configuration section at the top of your app.py
+BASE_DIR = Path(__file__).resolve().parent
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads', 'documents')
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
+# Create upload directory if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Login decorator
 def login_required(f):
@@ -63,6 +78,20 @@ google = oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
+# Load the model
+try:
+    model = joblib.load('static/models/car_price_predict.pkl')
+    print("Model loaded successfully")
+    label_encoders = joblib.load('static/models/label_encoders.pkl')
+    print("Label encoders loaded successfully")
+except Exception as e:
+    print(f"Error loading model or encoders: {str(e)}")
+    print(f"Error type: {type(e)}")
+    import traceback
+    print(f"Traceback: {traceback.format_exc()}")
+    model = None
+    label_encoders = None
+
 # Index API
 @app.route('/')
 def index():
@@ -85,7 +114,6 @@ def signup():
         else:
             flash('User already exists! Please login.', 'error')
         return redirect(url_for('signup_page'))
-    
     # Create new user
     user_data = {
         'name': name,
@@ -117,24 +145,20 @@ def signup():
 def login():
     email=request.form.get('email')
     pss=request.form.get('password')
-    
     user=users.find_one({'email':email})
     if user:
         # Check if it's a Google user
         if 'google_id' in user:
             flash('Please use Google Sign In for this account', 'error')
             return redirect(url_for('login_page'))
-        
         # Regular password check
         if check_password_hash(user['password'], pss):
             session['user_id']=str(user['_id'])
             session['email']=user['email']
             session['name']=user['name']
             session['is_google_user']=False
-            
             flash('Login Successful!','success')
             return redirect(url_for('index'))
-    
     flash('Invalid Email or Password', 'error')
     return redirect(url_for('login_page'))
 
@@ -211,12 +235,12 @@ def google_authorize():
             user_data = {
                 'name': user_info['name'],
                 'email': user_info['email'],
-                'google_id': user_info['id'], 
+                'google_id': user_info['id'],
                 'profile_pic': user_info.get('picture'),
                 'created_at': datetime.utcnow()
             }
             result = users.insert_one(user_data)
-            user_id = str(result.inserted_id)  
+            user_id = str(result.inserted_id)
         else:
             users.update_one(
                 {'google_id': user_info['id']},
@@ -225,12 +249,11 @@ def google_authorize():
                     'last_login': datetime.utcnow()
                 }}
             )
-            user_id = str(user['_id'])  
+            user_id = str(user['_id'])
         session['user_id'] = user_id
         session['email'] = user_info['email']
         session['name'] = user_info['name']
         session['is_google_user'] = True
-        
         flash('Successfully logged in with Google!', 'success')
         return redirect(url_for('index'))
     except Exception as e:
@@ -262,11 +285,10 @@ def comparison():
     car_variants={}
     for company in car_company:
         models = car_data.distinct("car_model", {"car_company": company})
-        car_models[company] = models 
+        car_models[company] = models
         for model in models:
             variants=car_data.distinct("car_new_name",{"car_model": model})
             car_variants[model]=variants
-    print("Car Models Data:", car_models)
     return render_template('c.html', car_company=car_company, car_model=car_models, car_variant=car_variants, user=user)
 
 @app.route('/compare_cars', methods=['POST'])
@@ -280,20 +302,17 @@ def compare_cars():
         for i, car_name in enumerate(data.values(), 1):
             if not car_name or car_name == "select car":
                 continue
-            car = car_data.find_one({'car_name': car_name}) 
+            car = car_data.find_one({'car_name': car_name})
             if not car:
                 continue
             try:
                 # Clean and standardize the data
                 engine = str(car.get('engine', 'N/A')).replace('CC', '').strip()
                 engine = int(engine) if engine.isdigit() else 0
-                
                 mileage = str(car.get('mileage', 'N/A')).replace('kmpl', '').strip()
                 mileage = float(mileage) if mileage.replace('.', '').isdigit() else 0
-                
                 max_power = str(car.get('max_power', 'N/A')).replace('bhp', '').strip()
                 max_power = float(max_power) if max_power.replace('.', '').isdigit() else 0
-                
                 car_details[f'car{i}'] = {
                     'car_company': car.get('car_company', 'N/A'),
                     'car_model': car.get('car_model', 'N/A'),
@@ -310,7 +329,6 @@ def compare_cars():
                 }
             except Exception as e:
                 continue
-        
         if not car_details:
             return jsonify({"error": "No valid cars found in database"}), 400
         return jsonify(car_details)
@@ -325,15 +343,12 @@ def save_comparison():
         data = request.get_json()
         if not data:
             return jsonify({"error": "No data received"}), 400
-
         # Validate required fields
         if 'cars' not in data or 'details' not in data:
             return jsonify({"error": "Missing required fields: cars and details"}), 400
-
         user = get_current_user()
         if not user:
             return jsonify({"error": "User not found"}), 401
-
         # Create comparison document
         comparison_data = {
             "user_id": str(user['_id']),
@@ -346,42 +361,13 @@ def save_comparison():
         result = comp.insert_one(comparison_data)
         if not result.inserted_id:
             return jsonify({"error": "Failed to save comparison"}), 500
-            
         return jsonify({
             "message": "Comparison saved successfully",
             "comparison_id": str(result.inserted_id)
         })
-    
     except Exception as e:
         print(f"Error saving comparison: {e}")
         return jsonify({"error": str(e)}), 500
-
-@app.route('/my_comparisons')
-@login_required
-def my_comparisons():
-    try:
-        user = get_current_user()
-        user_comparisons = list(comp.find({"user_id": session['user_id']}).sort("created_at", -1))
-        
-        for comparison in user_comparisons:
-            comparison['_id'] = str(comparison['_id'])
-            comparison['created_at'] = comparison['created_at'].strftime('%d-%m-%Y %H:%M:%S')
-            
-            for car_key, car_name in comparison.get('cars', {}).items():
-                car_details = car_data.find_one({'name': car_name})
-                if car_details:
-                    comparison[f'{car_key}_details'] = {
-                        'name': car_details.get('name'),
-                        'company': car_details.get('company'),
-                        'model': car_details.get('model'),
-                        'year': car_details.get('year'),
-                        'price': car_details.get('selling_price')
-                    }
-        return render_template('my_comparisons.html', comparisons=user_comparisons, user=user)
-    except Exception as e:
-        print(f"Error retrieving comparisons: {e}")
-        flash('Error retrieving your comparisons', 'error')
-        return redirect(url_for('comparison'))
 
 # About US page API's
 @app.route('/about', methods=['GET', 'POST'])
@@ -395,11 +381,9 @@ def contact():
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
-
         if not name or not email or not message:
             flash('All fields are required!', 'error')
-            return redirect(url_for('contact_form')) 
-
+            return redirect(url_for('contact_form'))
         # ✅ Send confirmation email to user
         try:
             user_msg = Message(
@@ -411,11 +395,9 @@ def contact():
             mail.send(user_msg)
         except Exception as e:
             flash('Error sending confirmation email to user.', 'error')
-            print(f"Email error (User): {e}")
-
         # ✅ Send details to CarInfoX team
         try:
-            admin_email = "rumitrvr@gmail.com"  # Replace with CarInfoX team email
+            admin_email = "rumitrvr@gmail.com"
             admin_msg = Message(
                 "New Contact Form Submission - CarInfoX",
                 sender=app.config['MAIL_USERNAME'],
@@ -425,8 +407,6 @@ def contact():
             mail.send(admin_msg)
         except Exception as e:
             flash('Error sending message to CarInfoX team.', 'error')
-            print(f"Email error (Admin): {e}")
-
         flash('Your message has been sent successfully!', 'success')
         return redirect(url_for('index'))  # Redirect to home page
     return render_template('contact.html')
@@ -436,33 +416,389 @@ def contact():
 @login_required
 def recommendation():
     user = get_current_user()
-    return render_template('recommendation.html', user=user)
+    df = pd.read_csv('NewCarData.csv')
+    brands = sorted(df['Make'].unique().tolist())
+    return render_template('recommendation.html', user=user, brands=brands)
+
+@app.route('/predict_price', methods=['POST'])
+@login_required
+def predict_price():
+    try:
+        if model is None or label_encoders is None:
+            return jsonify({'error': 'Model or encoders not loaded. Please try again later.'}), 500
+        # Get data from form
+        data = request.get_json()
+        print("Received data:", data)
+        # Extract features
+        year = float(data.get('year', 0))
+        km_driven = float(data.get('km_driven', 0))
+        engine = float(data.get('engine', 0))
+        max_power = float(data.get('max_power', 0))
+        seats = float(data.get('seats', 0))
+        fuel_tank = float(data.get('fuel_tank', 0))
+        car_company = data.get('car_company', '')
+        fuel_type = data.get('fuel_type', '')
+        transmission = data.get('transmission', '')
+        color = data.get('color', '')
+
+        # Encode categorical features
+        try:
+            car_company_encoded = label_encoders['Make'].transform([car_company])[0]
+            fuel_type_encoded = label_encoders['Fuel Type'].transform([fuel_type])[0]
+            transmission_encoded = label_encoders['Transmission'].transform([transmission])[0]
+            color_encoded = label_encoders['Color'].transform([color])[0]
+        except Exception as e:
+            print(f"Error encoding categorical features: {str(e)}")
+            return jsonify({'error': f'Invalid categorical value: {str(e)}'}), 400
+
+        # Create feature array with encoded values
+        features = np.array([
+            car_company_encoded,  # Make (encoded)
+            fuel_type_encoded,    # Fuel Type (encoded)
+            transmission_encoded, # Transmission (encoded)
+            color_encoded,       # Color (encoded)
+            year, km_driven, engine, max_power, seats, fuel_tank]).reshape(1, -1)
+        # Make prediction
+        prediction = model.predict(features)[0]
+        print("Prediction:", prediction)
+        return jsonify({
+            'predicted_price': float(prediction),
+            'features_used': {
+                'car_company': car_company,
+                'fuel_type': fuel_type,
+                'transmission': transmission,
+                'color': color,
+                'year': year,
+                'km_driven': km_driven,
+                'engine': engine,
+                'max_power': max_power,
+                'seats': seats,
+                'fuel_tank': fuel_tank
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Document validation helper functions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def validate_rc_book(text):
+    """Validate RC Book content"""
+    # Check for common RC Book patterns
+    patterns = {
+        'registration_number': r'[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}',
+        'chassis_number': r'[A-Z0-9]{17}',
+        'engine_number': r'[A-Z0-9]{6,17}',
+        'owner_name': r'owner[:\s]+([a-zA-Z\s]+)',
+        'vehicle_class': r'(MCWG|LMV|TRANSPORT|MOTOR CAR)',
+        'registration_date': r'\d{2}/\d{2}/\d{4}'
+    }
+    matches = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, text, re.IGNORECASE)
+        matches[key] = bool(match)
+    # Return True if at least 3 patterns are found
+    return sum(matches.values()) >= 3
+
+def validate_puc(text):
+    """Validate PUC certificate content"""
+    patterns = {
+        'puc_number': r'certificate\s+no[.:]\s*([A-Z0-9]+)',
+        'valid_until': r'valid\s+(?:till|until)[:\s]+(\d{2}/\d{2}/\d{4})',
+        'emission_values': r'(CO|HC|CO2|O2|RPM)[:\s]+\d+\.?\d*',
+        'vehicle_number': r'[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}'
+    }
+    matches = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, text, re.IGNORECASE)
+        matches[key] = bool(match)
+    # Check if PUC is expired
+    if matches['valid_until']:
+        valid_until = re.search(patterns['valid_until'], text, re.IGNORECASE).group(1)
+        valid_date = datetime.strptime(valid_until, '%d/%m/%Y')
+        if valid_date < datetime.now():
+            return False
+    return sum(matches.values()) >= 2
+
+def validate_insurance(text):
+    """Validate Insurance document content"""
+    patterns = {
+        'policy_number': r'policy\s+no[.:]\s*([A-Z0-9-/]+)',
+        'valid_until': r'valid\s+(?:till|until|up\s+to)[:\s]+(\d{2}/\d{2}/\d{4})',
+        'insurer_name': r'(TATA|HDFC|ICICI|BAJAJ|NEW INDIA|ORIENTAL|UNITED|NATIONAL)',
+        'vehicle_number': r'[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}'
+    }
+    matches = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, text, re.IGNORECASE)
+        matches[key] = bool(match)
+    # Check if insurance is expired
+    if matches['valid_until']:
+        valid_until = re.search(patterns['valid_until'], text, re.IGNORECASE).group(1)
+        valid_date = datetime.strptime(valid_until, '%d/%m/%Y')
+        if valid_date < datetime.now():
+            return False
+    return sum(matches.values()) >= 2
+
+def extract_text_from_image(image_path):
+    """Extract text from image using OCR"""
+    try:
+        # Read image using OpenCV
+        img = cv2.imread(image_path)
+        # Convert to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Apply threshold to get image with only black and white
+        thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        # Extract text using pytesseract
+        text = pytesseract.image_to_string(thresh)
+        return text
+    except Exception as e:
+        print(f"Error in OCR processing: {e}")
+        return ""
+
+def extract_text_from_pdf(pdf_path):
+    """Extract text from PDF"""
+    try:
+        text = ""
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+        return text
+    except Exception as e:
+        print(f"Error in PDF processing: {e}")
+        return ""
+
+@app.route('/validate_document', methods=['POST'])
+def validate_document():
+    try:
+        if 'document' not in request.files:
+            return jsonify({
+                'success': False,
+                'message': 'No document uploaded'
+            })
+
+        file = request.files['document']
+        document_type = request.form.get('document_type')
+
+        if file.filename == '':
+            return jsonify({
+                'success': False,
+                'message': 'No selected file'
+            })
+
+        if not allowed_file(file.filename):
+            return jsonify({
+                'success': False,
+                'message': 'Invalid file type'
+            })
+
+        # Create upload directory if it doesn't exist
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        # Save file temporarily
+        filename = secure_filename(file.filename)
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(temp_path)
+
+        # Extract text based on file type
+        file_extension = filename.rsplit('.', 1)[1].lower()
+        if file_extension == 'pdf':
+            text = extract_text_from_pdf(temp_path)
+        else:
+            text = extract_text_from_image(temp_path)
+
+        # Validate document based on type
+        validation_result = False
+        if document_type == 'rc_book':
+            validation_result = validate_rc_book(text)
+        elif document_type == 'puc':
+            validation_result = validate_puc(text)
+        elif document_type == 'insurance':
+            validation_result = validate_insurance(text)
+
+        # Clean up temporary file
+        os.remove(temp_path)
+
+        if validation_result:
+            return jsonify({
+                'success': True,
+                'message': 'Document validated successfully',
+                'document_type': document_type
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': f'Invalid {document_type.replace("_", " ")} document'
+            })
+
+    except Exception as e:
+        print(f"Error in document validation: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'Error processing document: {str(e)}'
+        }), 500
 
 # Analysis Dashboard page API's
+@app.route('/addcarsurvey', methods=['POST'])
+@login_required
+def addcarsurvey():
+    try:
+        # Get the current user
+        user = get_current_user()
+        if not user:
+            return jsonify({
+                "success": False,
+                "message": "User not authenticated"
+            }), 401
+        # Get form data and file
+        data = request.form.to_dict()
+        document_file = request.files.get('document')
+        document_type = data.get('document_type')
+        document_binary = None
+        filename = None
+
+        # Validate document if provided
+        if document_file and document_type:
+            try:
+                # Check if file type is allowed
+                if not allowed_file(document_file.filename):
+                    return jsonify({
+                        "success": False,
+                        "message": "Invalid file type. Allowed types are PDF and images."
+                    }), 400
+                # Secure the filename and create full path
+                filename = secure_filename(document_file.filename)
+                temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                # Save file temporarily
+                document_file.save(temp_path)
+                # Extract text based on file type
+                file_extension = filename.rsplit('.', 1)[1].lower()
+                if file_extension == 'pdf':
+                    text = extract_text_from_pdf(temp_path)
+                else:
+                    text = extract_text_from_image(temp_path)
+                # Validate document based on type
+                is_valid = False
+                if document_type == 'rc_book':
+                    is_valid = validate_rc_book(text)
+                elif document_type == 'puc':
+                    is_valid = validate_puc(text)
+                elif document_type == 'insurance':
+                    is_valid = validate_insurance(text)
+                # If document is not valid, return error
+                if not is_valid:
+                    # Clean up temporary file
+                    if os.path.exists(temp_path):
+                        os.remove(temp_path)
+                    return jsonify({
+                        "success": False,
+                        "message": f"Invalid {document_type.replace('_', ' ')}. Please upload a valid document."
+                    }), 400
+                # If valid, read file into binary
+                with open(temp_path, 'rb') as file:
+                    document_binary = Binary(file.read())
+                # Clean up temporary file
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+            except Exception as e:
+                # Clean up temporary file in case of error
+                if 'temp_path' in locals() and os.path.exists(temp_path):
+                    os.remove(temp_path)
+                print(f"Document processing error: {e}")
+                return jsonify({
+                    "success": False,
+                    "message": f"Error processing document: {str(e)}"
+                }), 500
+        # Create the survey document
+        survey_document = {
+            # Basic Information
+            'car_company': data.get('car_company'),
+            'car_model': data.get('car_model'),
+            'car_new_name': data.get('car_new_name'),
+            'car_name': f"{data.get('car_company')} {data.get('car_model')} {data.get('car_new_name')}",
+            # Car Details
+            'year': int(data.get('year')),
+            'selling_price': int(data.get('selling_price')),
+            'km_driven': int(data.get('km_driven')),
+            # Location
+            'Region': data.get('Region'),
+            'city': data.get('city'),
+            # Specifications
+            'fuel': data.get('fuel'),
+            'transmission': data.get('transmission'),
+            'owner': data.get('owner'),
+            'mileage': float(data.get('mileage')),
+            'engine': int(data.get('engine')),
+            'max_power': float(data.get('max_power')),
+            'seats': int(data.get('seats')),
+            # Document Information
+            'document_type': document_type if document_binary else None,
+            'document_file': document_binary,
+            'document_filename': filename,
+            'document_verified': True if document_binary else False,
+            # Additional Information
+            'car_age': datetime.now().year - int(data.get('year')),
+            # Metadata
+            'user_id': str(user['_id']),
+            'user_email': user['email'],
+            'created_at': datetime.utcnow(),
+        }
+
+        # Validate required fields
+        required_fields = [
+            'car_company', 'car_model', 'car_new_name', 'year', 
+            'selling_price', 'km_driven', 'Region', 'city',
+            'fuel', 'transmission', 'owner', 'mileage',
+            'engine', 'max_power', 'seats'
+        ]
+        missing_fields = [field for field in required_fields if not survey_document.get(field)]
+        if missing_fields:
+            return jsonify({
+                "success": False,
+                "message": f"Missing required fields: {', '.join(missing_fields)}"
+            }), 400
+        # Insert into database
+        result = car_data.insert_one(survey_document)
+        if result.inserted_id:
+            return jsonify({
+                "success": True,
+                "message": "Car survey saved successfully with verified documents",
+                "id": str(result.inserted_id)
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Failed to save car survey"
+            }), 500
+    except Exception as e:
+        print(f"Error in addcarsurvey: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"An error occurred: {str(e)}"
+        }), 500
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    user = get_current_user()
     # Get total number of cars
     total_cars = car_data.count_documents({})
-    
     # Get total number of unique companies
     companies = car_data.distinct('car_company')
     total_companies = len(companies)
-    
     # Calculate average price
     price_pipeline = [
         {'$group': {'_id': None, 'avg_price': {'$avg': '$selling_price'}}}
     ]
     avg_price_result = list(car_data.aggregate(price_pipeline))
     avg_price = int(avg_price_result[0]['avg_price']) if avg_price_result else 0
-    
     # Calculate average mileage
-    mileage_pipeline = [
-        {'$group': {'_id': None, 'avg_mileage': {'$avg': '$mileage'}}}
-    ]
+    mileage_pipeline = [{'$group': {'_id': None, 'avg_mileage': {'$avg': '$mileage'}}}]
     avg_mileage_result = list(car_data.aggregate(mileage_pipeline))
     avg_mileage = round(avg_mileage_result[0]['avg_mileage'], 2) if avg_mileage_result else 0
-    
     # Get price trends by year and company
     price_trend_pipeline = [
         {'$group': {
@@ -480,7 +816,6 @@ def dashboard():
         {'$sort': {'_id': 1}}
     ]
     price_data = list(car_data.aggregate(price_trend_pipeline))
-    
     # Get company distribution
     company_pipeline = [
         {'$group': {
@@ -491,7 +826,6 @@ def dashboard():
         {'$limit': 12}
     ]
     company_data = list(car_data.aggregate(company_pipeline))
-    
     # Get fuel type distribution with company info
     fuel_pipeline = [
         {
@@ -524,7 +858,6 @@ def dashboard():
         {'$sort': {'count': -1}}
     ]
     fuel_data = list(car_data.aggregate(fuel_pipeline))
-    
     # Get region distribution
     region_pipeline = [
         {
@@ -554,17 +887,18 @@ def dashboard():
         {'$sort': {'count': -1}}
     ]
     region_data = list(car_data.aggregate(region_pipeline))
-    
+
     return render_template('dashboard.html',
-                         total_cars=total_cars,
-                         total_companies=total_companies,
-                         companies=companies,
-                         avg_price="{:,.0f}".format(avg_price),
-                         avg_mileage=avg_mileage,
-                         price_data=price_data,
-                         company_data=company_data,
-                         fuel_data=fuel_data,
-                         region_data=region_data)
+                        total_cars=total_cars,
+                        total_companies=total_companies,
+                        companies=companies,
+                        avg_price="{:,.0f}".format(avg_price),
+                        avg_mileage=avg_mileage,
+                        price_data=price_data,
+                        company_data=company_data,
+                        fuel_data=fuel_data,
+                        user=user,
+                        region_data=region_data)
 
 # Latest Cars page API
 @app.route('/latest_cars')
@@ -585,10 +919,8 @@ def submit_review():
     try:
         user = get_current_user()
         data = request.get_json() if request.is_json else request.form.to_dict()
-        
         if not data:
             return jsonify({"success": False, "message": "No data received!"}), 400
-
         review_details = {
             "car": data.get("car"),
             "rating": data.get("rating"),
@@ -625,76 +957,59 @@ def my_history():
             user_comparisons = list(comp.find({"user_id": session['user_id']}).sort("created_at", -1))
             for comparison in user_comparisons:
                 comparison['id'] = str(comparison['_id'])
-                comparison['date'] = comparison['created_at'].strftime('%d-%m-%Y %H:%M:%S')
-                # Get car details for the comparison
+                comparison['date'] = comparison['created_at'].strftime('%Y-%m-%d %H:%M:%S')
                 cars = comparison.get('cars', {})
-                car1 = None
-                car2 = None
-                
-                if cars.get('car1'):
-                    car1 = car_data.find_one({'car_name': cars['car1']})
-                    if car1:
-                        comparison['car1_name'] = f"{car1.get('car_company', '')} {car1.get('car_model', '')}"
-                        comparison['car1_details'] = {
-                            'engine': car1.get('engine', 'N/A'),
-                            'mileage': car1.get('mileage', 'N/A'),
-                            'max_power': car1.get('max_power', 'N/A'),
-                            'torque': car1.get('torque', 'N/A'),
-                            'fuel_type': car1.get('fuel', 'N/A'),
-                            'transmission': car1.get('transmission', 'N/A'),
-                            'seats': car1.get('seats', 'N/A'),
-                            'price': car1.get('selling_price', 'N/A'),
-                            'year': car1.get('year', 'N/A')
-                        }
-                if cars.get('car2'):
-                    car2 = car_data.find_one({'car_name': cars['car2']})
-                    if car2:
-                        comparison['car2_name'] = f"{car2.get('car_company', '')} {car2.get('car_model', '')}"
-                        comparison['car2_details'] = {
-                            'engine': car2.get('engine', 'N/A'),
-                            'mileage': car2.get('mileage', 'N/A'),
-                            'max_power': car2.get('max_power', 'N/A'),
-                            'torque': car2.get('torque', 'N/A'),
-                            'fuel_type': car2.get('fuel', 'N/A'),
-                            'transmission': car2.get('transmission', 'N/A'),
-                            'seats': car2.get('seats', 'N/A'),
-                            'price': car2.get('selling_price', 'N/A'),
-                            'year': car2.get('year', 'N/A')
-                        }
-                # Add comparison metrics only if both cars exist
-                if car1 and car2:
+                car_details = []
+
+                # Fetch car details for all cars in the comparison
+                for car_key, car_name in cars.items():
+                    car = car_data.find_one({'car_name': car_name})
+                    if car:
+                        car_details.append({
+                            'name': f"{car.get('car_company', '')} {car.get('car_model', '')}",
+                            'engine': car.get('engine', 'N/A'),
+                            'mileage': float(str(car.get('mileage', '0')).replace('kmpl', '').strip() or 0),
+                            'max_power': float(str(car.get('max_power', '0')).replace('bhp', '').strip() or 0),
+                            'torque': car.get('torque', 'N/A'),
+                            'fuel_type': car.get('fuel', 'N/A'),
+                            'transmission': car.get('transmission', 'N/A'),
+                            'seats': car.get('seats', 'N/A'),
+                            'price': float(str(car.get('selling_price', '0')).replace(',', '').strip() or 0),
+                            'year': car.get('year', 'N/A')
+                        })
+
+                # Add car details to the comparison
+                comparison['car_details'] = car_details
+                # Calculate metrics if there are at least two cars
+                if len(car_details) > 1:
                     try:
-                        # Calculate price difference
-                        price1 = float(str(car1.get('selling_price', '0')).replace(',', ''))
-                        price2 = float(str(car2.get('selling_price', '0')).replace(',', ''))
-                        price1="{:,.2f}".format(price1)
-                        price2="{:,.2f}".format(price2)
-                        comparison['price_difference'] = abs(price1 - price2)
-                        comparison['price_difference_percentage'] = round((abs(price1 - price2) / min(price1, price2)) * 100, 1) if min(price1, price2) > 0 else 0
-                        
-                        # Calculate mileage difference
-                        mileage1 = float(str(car1.get('mileage', '0')).replace('kmpl', '').strip() or 0)
-                        mileage2 = float(str(car2.get('mileage', '0')).replace('kmpl', '').strip() or 0)
-                        comparison['mileage_difference'] = abs(mileage1 - mileage2)
-                        
-                        # Calculate power difference
-                        power1 = float(str(car1.get('max_power', '0')).replace('bhp', '').strip() or 0)
-                        power2 = float(str(car2.get('max_power', '0')).replace('bhp', '').strip() or 0)
-                        comparison['power_difference'] = abs(power1 - power2)
-                        
-                        # Add comparison summary
-                        comparison['summary'] = {
-                            'better_mileage': 'car1' if mileage1 > mileage2 else 'car2',
-                            'better_power': 'car1' if power1 > power2 else 'car2',
-                            'better_price': 'car1' if price1 < price2 else 'car2'
-                        }
-                    except (ValueError, TypeError) as e:
+                        # Calculate price, mileage, and power differences
+                        price_differences = [
+                            abs(car_details[i]['price'] - car_details[j]['price'])
+                            for i in range(len(car_details)) for j in range(i + 1, len(car_details))
+                        ]
+                        mileage_differences = [
+                            abs(car_details[i]['mileage'] - car_details[j]['mileage'])
+                            for i in range(len(car_details)) for j in range(i + 1, len(car_details))
+                        ]
+                        power_differences = [
+                            abs(car_details[i]['max_power'] - car_details[j]['max_power'])
+                            for i in range(len(car_details)) for j in range(i + 1, len(car_details))
+                        ]
+                        # Find the best car based on price, mileage, and power
+                        comparison['best_price_car'] = min(car_details, key=lambda x: x['price'])['name']
+                        comparison['best_mileage_car'] = max(car_details, key=lambda x: x['mileage'])['name']
+                        comparison['best_power_car'] = max(car_details, key=lambda x: x['max_power'])['name']
+                        # Add summary metrics
+                        comparison['price_differences'] = price_differences
+                        comparison['mileage_differences'] = mileage_differences
+                        comparison['power_differences'] = power_differences
+                    except Exception as e:
                         print(f"Error calculating comparison metrics: {e}")
                         comparison['calculation_error'] = True
         except Exception as e:
             print(f"Error processing comparisons: {e}")
             user_comparisons = []
-        
         # Get user's reviews
         user_reviews = []
         try:
@@ -711,13 +1026,11 @@ def my_history():
         except Exception as e:
             print(f"Error processing reviews: {e}")
             user_reviews = []
-        
         # Add join date to user info
         if 'created_at' in user:
             user['join_date'] = user['created_at'].strftime('%B %Y')
         else:
             user['join_date'] = 'Unknown'
-
         # Add user statistics
         try:
             last_activity = 'No activity'
@@ -726,7 +1039,6 @@ def my_history():
                 review_dates = [r.get('timestamp') for r in user_reviews if r.get('timestamp')]
                 if comparison_dates or review_dates:
                     last_activity = max(comparison_dates + review_dates).strftime('%d-%m-%Y %H:%M:%S')
-            
             user['stats'] = {
                 'total_comparisons': len(user_comparisons),
                 'total_reviews': len(user_reviews),
@@ -741,12 +1053,10 @@ def my_history():
                 'avg_rating': 0,
                 'last_activity': 'No activity'
             }
-
-        return render_template('my_history.html', 
+        return render_template('my_history.html',
                             user=user,
                             comparisons=user_comparisons,
                             reviews=user_reviews)
-    
     except Exception as e:
         print(f"Error in my_history route: {e}")
         flash('Error retrieving your history. Please try again later.', 'error')
@@ -767,7 +1077,6 @@ def update_profile():
                 "success": False,
                 "message": "Name and email are required"
             }), 400
-
         # Check if email already exists for another user
         existing_user = users.find_one({
             'email': new_email,
@@ -778,7 +1087,6 @@ def update_profile():
                 "success": False,
                 "message": "Email already in use by another account"
             }), 400
-
         # Update user in database
         result = users.update_one(
             {'_id': ObjectId(session['user_id'])},
@@ -788,12 +1096,10 @@ def update_profile():
                 'updated_at': datetime.utcnow()
             }}
         )
-
         if result.modified_count > 0:
             # Update session data
             session['name'] = new_name
             session['email'] = new_email
-            
             return jsonify({
                 "success": True,
                 "message": "Profile updated successfully"
@@ -810,8 +1116,6 @@ def update_profile():
             "success": False,
             "message": "An error occurred while updating profile"
         }), 500
-
-
 # Privacy Policy page API
 @app.route('/privacy_policy')
 def privacy_policy():
