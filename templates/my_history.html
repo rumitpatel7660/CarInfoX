@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My History - CarInfoX</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .activity-card {
             background: white;
@@ -13,7 +16,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
-        
+
         .activity-card:hover {
             transform: translateY(-5px);
         }
@@ -79,8 +82,80 @@
         .metric-item:last-child {
             border-bottom: none;
         }
+
+        .car-name {
+            font-size: 1.25 rem;
+            /* Increase font size (28px) */
+            font-weight: 600;
+            /* Bold font weight */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal-animate-top {
+            animation: animatetop 0.4s;
+        }
+
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0;
+            }
+            to {
+                top: 20px;
+                opacity: 1;
+            }
+        }
+
+        /* Add styles for form inputs focus state */
+        input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Add loading spinner animation */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        .activity-card[data-comparison-id] {
+            display: none; /* Hide all cards by default */
+        }
+        
+        #prev-comparison-btn:disabled,
+        #next-comparison-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .comparison-item {
+            display: none; /* Hide all by default */
+        }
+
+        .comparison-item.active {
+            display: block;
+        }
+
+        /* Ensure the comparison cards have proper spacing */
+        .activity-card {
+            margin-bottom: 1rem;
+        }
+
+        /* Ensure the container has proper spacing */
+        #comparisons-container {
+            min-height: 200px; /* Minimum height to prevent layout shift */
+        }
     </style>
 </head>
+
 <body class="bg-gray-100">
     {% include 'navbar.html' %}
 
@@ -128,139 +203,113 @@
             <div class="section-header">
                 <h2 class="text-2xl font-bold">Saved Comparisons</h2>
             </div>
-            <div class="grid grid-cols-1 gap-6">
+            <div id="comparisons-container" class="grid grid-cols-1 gap-6">
                 {% for comparison in comparisons %}
-                <div class="activity-card p-6" data-comparison-id="{{ comparison.id }}">
+                <div class="activity-card p-6 comparison-item" data-comparison-id="{{ comparison.id }}">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold">Comparison #{{ comparison.id }}</h3>
                         <span class="text-gray-500 text-sm">{{ comparison.date }}</span>
                     </div>
-                    
+
                     <!-- Cars Overview -->
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="text-center flex-1">
-                            <p class="mt-2 font-medium text-lg">{{ comparison.car1_name }}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-{{ comparison.car_details|length }} gap-4">
+                        {% for car in comparison.car_details %}
+                        <div class="text-center">
+                            <p class="car-name">{{ car.name }}</p>
+                            <p class="text-lg text-gray-600">Price: ₹{{ "%.2f"|format(car.price) }}</p>
+                            <p class="text-lg text-gray-600">Mileage: {{ "%.1f"|format(car.mileage) }} kmpl</p>
+                            <p class="text-lg text-gray-600">Power: {{ "%.1f"|format(car.max_power) }} bhp</p>
                         </div>
-                        <div class="text-2xl text-blue-500 mx-4">VS</div>
-                        <div class="text-center flex-1">
-                            <p class="mt-2 font-medium text-lg">{{ comparison.car2_name }}</p>
-                        </div>
+                        {% endfor %}
                     </div>
 
                     <!-- Comparison Metrics -->
-                    <div class="comparison-metrics">
+                    <div class="comparison-metrics mt-6 mx-auto max-w-3x1 p-4">
                         <h4 class="font-semibold mb-3">Comparison Summary</h4>
                         <div class="metric-item">
-                            <span>Price Difference:</span>
-                            <span class="font-medium">₹{{ "%.2f"|format(comparison.price_difference) }} ({{ comparison.price_difference_percentage }}%)</span>
+                            <span>Best Price:</span>
+                            <span class="font-medium text-green-600">{{ comparison.best_price_car }}</span>
                         </div>
                         <div class="metric-item">
-                            <span>Mileage Difference:</span>
-                            <span class="font-medium">{{ "%.1f"|format(comparison.mileage_difference) }} kmpl</span>
+                            <span>Best Mileage:</span>
+                            <span class="font-medium text-green-600">{{ comparison.best_mileage_car }}</span>
                         </div>
                         <div class="metric-item">
-                            <span>Power Difference:</span>
-                            <span class="font-medium">{{ comparison.power_difference }} bhp</span>
+                            <span>Best Power:</span>
+                            <span class="font-medium text-green-600">{{ comparison.best_power_car }}</span>
                         </div>
                     </div>
 
-                    <!-- Car Specifications -->
-                    <div class="mt-6">
-                        <h4 class="font-semibold mb-3">Detailed Specifications</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Car 1 Specs -->
-                            <div>
-                                <h5 class="font-medium mb-2">{{ comparison.car1_name }}</h5>
-                                <div class="specs-grid">
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Engine:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.engine }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Mileage:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.mileage }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Power:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.max_power }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Torque:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.torque }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Fuel Type:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.fuel_type }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Transmission:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.transmission }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Seats:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.seats }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Price:</span>
-                                        <span class="font-medium">₹{{ comparison.car1_details.price }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Year:</span>
-                                        <span class="font-medium">{{ comparison.car1_details.year }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Car 2 Specs -->
-                            <div>
-                                <h5 class="font-medium mb-2">{{ comparison.car2_name }}</h5>
-                                <div class="specs-grid">
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Engine:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.engine }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Mileage:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.mileage }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Power:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.max_power }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Torque:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.torque }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Fuel Type:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.fuel_type }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Transmission:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.transmission }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Seats:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.seats }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Price:</span>
-                                        <span class="font-medium">₹{{ comparison.car2_details.price }}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="text-gray-600">Year:</span>
-                                        <span class="font-medium">{{ comparison.car2_details.year }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- View Details Button -->
                     <div class="mt-6 flex justify-end">
-                        <button class="text-blue-500 hover:text-blue-600 mr-4">View Details</button>
-                        <button class="text-red-500 hover:text-red-600">Delete</button>
+                        <button class="text-blue-500 hover:text-blue-800 mr-4 view-details-btn"
+                            data-comparison-id="{{ comparison.id }}">View Details</button>
+                        <button class="text-red-500 hover:text-red-800 mr-4 view-details-btn">Delete</button>
+                    </div>
+
+                    <!-- Detailed Specifications (Initially Hidden) -->
+                    <div class="detailed-specifications hidden" id="details-{{ comparison.id }}">
+                        <h4 class="font-semibold mb-3">Detailed Specifications</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-{{ comparison.car_details|length }} gap-6">
+                            {% for car in comparison.car_details %}
+                            <div>
+                                <h5 class="font-medium mb-2">{{ car.name }}</h5>
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Engine:</span>
+                                        <span class="font-medium">{{ car.engine }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Mileage:</span>
+                                        <span class="font-medium">{{ "%.1f"|format(car.mileage) }} kmpl</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Power:</span>
+                                        <span class="font-medium">{{ "%.1f"|format(car.max_power) }} bhp</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Torque:</span>
+                                        <span class="font-medium">{{ car.torque }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Fuel Type:</span>
+                                        <span class="font-medium">{{ car.fuel_type }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Transmission:</span>
+                                        <span class="font-medium">{{ car.transmission }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Seats:</span>
+                                        <span class="font-medium">{{ car.seats }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Price:</span>
+                                        <span class="font-medium">₹{{ "%.2f"|format(car.price) }}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="text-gray-600">Year:</span>
+                                        <span class="font-medium">{{ car.year }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+            
+            <!-- Pagination controls -->
+            <div class="flex justify-center items-center mt-6 space-x-4">
+                <button id="prev-comparison-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md flex items-center">
+                    <i class="fas fa-chevron-left mr-2"></i>
+                    Previous
+                </button>
+                <button id="next-comparison-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md flex items-center">
+                    Next
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </button>
             </div>
         </div>
 
@@ -283,11 +332,11 @@
                         </div>
                         <span class="text-gray-500 text-sm">{{ review.date }}</span>
                     </div>
-                    
+
                     <div class="mt-4">
                         <h4 class="font-medium mb-2">{{ review.title }}</h4>
                         <p class="text-gray-700">{{ review.comment }}</p>
-                        
+
                         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <h5 class="font-medium text-green-600 mb-2">Pros</h5>
@@ -298,7 +347,7 @@
                                 <p class="text-gray-700">{{ review.cons }}</p>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4 text-sm text-gray-600">
                             <p>Ownership Duration: {{ review.ownership_duration }}</p>
                         </div>
@@ -312,26 +361,95 @@
                 {% endfor %}
             </div>
         </div>
-    {% include 'footer.html' %}
+        {% include 'footer.html' %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle profile edit button
-            const editProfileBtn = document.querySelector('.section-header button');
-            editProfileBtn.addEventListener('click', function() {
-                const nameElement = document.querySelector('.activity-card h3');
-                const emailElement = document.querySelector('.activity-card p');
-                
-                const currentName = nameElement.textContent;
-                const currentEmail = emailElement.textContent;
+        <div id="editProfileModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full" style="z-index: 1000;">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Profile</h3>
+                        <button id="closeModal" class="text-gray-400 hover:text-gray-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6">
+                        <form id="profileUpdateForm" class="space-y-4">
+                            <div>
+                                <label for="newName" class="block text-sm font-medium text-gray-700">Name</label>
+                                <input type="text" id="newName" name="name" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                       placeholder="Enter your name">
+                            </div>
+                            <div>
+                                <label for="newEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email" id="newEmail" name="email" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                       placeholder="Enter your email">
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" id="cancelBtn"
+                                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                    Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                const newName = prompt('Enter new name:', currentName);
-                const newEmail = prompt('Enter new email:', currentEmail);
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const editProfileBtn = document.querySelector('.section-header button');
+                const modal = document.getElementById('editProfileModal');
+                const closeModal = document.getElementById('closeModal');
+                const cancelBtn = document.getElementById('cancelBtn');
+                const profileForm = document.getElementById('profileUpdateForm');
+                const nameInput = document.getElementById('newName');
+                const emailInput = document.getElementById('newEmail');
 
-                if (newName && newEmail) {
+                // Show modal
+                editProfileBtn.addEventListener('click', function () {
+                    const currentName = document.querySelector('.activity-card h3').textContent.trim();
+                    const currentEmail = document.querySelector('.activity-card p').textContent.trim();
+                    
+                    nameInput.value = currentName;
+                    emailInput.value = currentEmail;
+                    modal.classList.remove('hidden');
+                });
+
+                // Hide modal
+                function hideModal() {
+                    modal.classList.add('hidden');
+                }
+
+                closeModal.addEventListener('click', hideModal);
+                cancelBtn.addEventListener('click', hideModal);
+
+                // Close modal when clicking outside
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        hideModal();
+                    }
+                });
+
+                // Handle form submission
+                profileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
                     const formData = new FormData();
-                    formData.append('name', newName);
-                    formData.append('email', newEmail);
+                    formData.append('name', nameInput.value);
+                    formData.append('email', emailInput.value);
+
+                    // Show loading state
+                    const submitBtn = profileForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                    submitBtn.disabled = true;
 
                     fetch('/update_profile', {
                         method: 'POST',
@@ -340,87 +458,178 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            nameElement.textContent = newName;
-                            emailElement.textContent = newEmail;
-                            alert('Profile updated successfully!');
+                            // Update the profile information on the page
+                            document.querySelector('.activity-card h3').textContent = nameInput.value;
+                            document.querySelector('.activity-card p').textContent = emailInput.value;
+                            
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Profile updated successfully',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            
+                            hideModal();
                         } else {
-                            alert('Failed to update profile: ' + data.message);
+                            throw new Error(data.message || 'Failed to update profile');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred while updating profile');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error.message || 'An error occurred while updating profile'
+                        });
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
                     });
-                }
-            });
-
-            // Handle comparison delete buttons
-            const comparisonCards = document.querySelectorAll('.activity-card');
-            comparisonCards.forEach(card => {
-                const deleteBtn = card.querySelector('button:last-child');
-                if (deleteBtn) {
-                    deleteBtn.addEventListener('click', function() {
-                        if (confirm('Are you sure you want to delete this comparison?')) {
-                            const comparisonId = card.dataset.comparisonId;
-                            fetch(`/delete_comparison/${comparisonId}`, {
-                                method: 'DELETE'
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    card.remove();
-                                    alert('Comparison deleted successfully!');
-                                } else {
-                                    alert('Failed to delete comparison: ' + data.message);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('An error occurred while deleting comparison');
-                            });
-                        }
-                    });
-                }
-            });
-
-            // Handle review delete buttons
-            const reviewCards = document.querySelectorAll('.review-card');
-            reviewCards.forEach(card => {
-                const deleteBtn = card.querySelector('button:last-child');
-                if (deleteBtn) {
-                    deleteBtn.addEventListener('click', function() {
-                        if (confirm('Are you sure you want to delete this review?')) {
-                            const reviewId = card.dataset.reviewId;
-                            fetch(`/delete_review/${reviewId}`, {
-                                method: 'DELETE'
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    card.remove();
-                                    alert('Review deleted successfully!');
-                                } else {
-                                    alert('Failed to delete review: ' + data.message);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('An error occurred while deleting review');
-                            });
-                        }
-                    });
-                }
-            });
-
-            // Handle view comparison details
-            const viewDetailsBtns = document.querySelectorAll('.activity-card button:first-child');
-            viewDetailsBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const comparisonId = btn.closest('.activity-card').dataset.comparisonId;
-                    window.location.href = `/comparison/${comparisonId}`;
                 });
+
+                // Handle comparison delete buttons
+                const comparisonCards = document.querySelectorAll('.activity-card');
+                comparisonCards.forEach(card => {
+                    const deleteBtn = card.querySelector('button:last-child');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function () {
+                            if (confirm('Are you sure you want to delete this comparison?')) {
+                                const comparisonId = card.dataset.comparisonId;
+                                fetch(`/delete_comparison/${comparisonId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            card.remove();
+                                            alert('Comparison deleted successfully!');
+                                        } else {
+                                            alert('Failed to delete comparison: ' + data.message);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        alert('An error occurred while deleting comparison');
+                                    });
+                            }
+                        });
+                    }
+                });
+
+                // Handle review delete buttons
+                const reviewCards = document.querySelectorAll('.review-card');
+                reviewCards.forEach(card => {
+                    const deleteBtn = card.querySelector('button:last-child');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function () {
+                            if (confirm('Are you sure you want to delete this review?')) {
+                                const reviewId = card.dataset.reviewId;
+                                fetch(`/delete_review/${reviewId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            card.remove();
+                                            alert('Review deleted successfully!');
+                                        } else {
+                                            alert('Failed to delete review: ' + data.message);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        alert('An error occurred while deleting review');
+                                    });
+                            }
+                        });
+                    }
+                });
+
+                // Handle detailed specifications toggle
+                const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+
+                viewDetailsButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const comparisonId = button.getAttribute('data-comparison-id');
+                        const detailsSection = document.getElementById(`details-${comparisonId}`);
+
+                        if (detailsSection.classList.contains('hidden')) {
+                            detailsSection.classList.remove('hidden');
+                            button.textContent = 'Hide Details';
+                        } else {
+                            detailsSection.classList.add('hidden');
+                            button.textContent = 'View Details';
+                        }
+                    });
+                });
+
+                // Handle view comparison details
+                const viewDetailsBtns = document.querySelectorAll('.activity-card button:first-child');
+                viewDetailsBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const comparisonId = btn.closest('.activity-card').dataset.comparisonId;
+                    });
+                });
+
+                // Get all comparison items
+                const comparisons = document.querySelectorAll('.comparison-item');
+                const itemsPerPage = 3;
+                let currentPage = 1;
+                
+                // Calculate total pages
+                const totalPages = Math.ceil(comparisons.length / itemsPerPage);
+                
+                // Get pagination buttons
+                const prevButton = document.getElementById('prev-comparison-btn');
+                const nextButton = document.getElementById('next-comparison-btn');
+                
+                function showPage(page) {
+                    // Hide all comparisons first
+                    comparisons.forEach(comparison => {
+                        comparison.style.display = 'none';
+                    });
+                    
+                    // Calculate start and end indices for current page
+                    const start = (page - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    
+                    // Show comparisons for current page
+                    for(let i = start; i < end && i < comparisons.length; i++) {
+                        comparisons[i].style.display = 'block';
+                    }
+                    
+                    // Update button states
+                    prevButton.disabled = page === 1;
+                    nextButton.disabled = page === totalPages;
+                    
+                    // Update button opacity based on disabled state
+                    prevButton.style.opacity = page === 1 ? '0.5' : '1';
+                    nextButton.style.opacity = page === totalPages ? '0.5' : '1';
+                }
+                
+                // Add click handlers for pagination buttons
+                prevButton.addEventListener('click', () => {
+                    if(currentPage > 1) {
+                        currentPage--;
+                        showPage(currentPage);
+                    }
+                });
+                
+                nextButton.addEventListener('click', () => {
+                    if(currentPage < totalPages) {
+                        currentPage++;
+                        showPage(currentPage);
+                    }
+                });
+                
+                // Show initial page
+                showPage(1);
             });
-        });
-    </script>
+        </script>
 </body>
-</html> 
+
+</html>

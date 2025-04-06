@@ -14,13 +14,15 @@
     <!-- Add AOS library for scroll animations -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Add custom styles to prevent horizontal scrolling */
         body {
             overflow-x: hidden;
             max-width: 100vw;
         }
-        
+
         /* Ensure content stays within viewport */
         .container {
             width: 100%;
@@ -28,14 +30,14 @@
             padding-left: 1rem;
             padding-right: 1rem;
         }
-        
+
         @media (min-width: 640px) {
             .container {
                 padding-left: 1.5rem;
                 padding-right: 1.5rem;
             }
         }
-        
+
         @media (min-width: 1024px) {
             .container {
                 padding-left: 2rem;
@@ -56,6 +58,27 @@
                 gap: 1rem !important;
             }
         }
+
+        /* Add this CSS for the processing state */
+        .processing {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .processing-spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            margin-right: 0.5em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -65,14 +88,23 @@
     {% include 'navbar.html' %}
 
     <!-- Dashboard Header -->
-    <div class="relative overflow-hidden min-h-[500px] flex items-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
+    <div
+        class="relative overflow-hidden min-h-[500px] flex items-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
         <!-- Animated Background Elements -->
         <div class="absolute inset-0">
-            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:24px_24px]"></div>
+            <div
+                class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:24px_24px]">
+            </div>
             <!-- Animated circles -->
-            <div class="absolute top-20 left-20 w-48 h-48 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-            <div class="absolute top-40 right-20 w-56 h-56 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-20 left-1/2 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+            <div
+                class="absolute top-20 left-20 w-48 h-48 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob">
+            </div>
+            <div
+                class="absolute top-40 right-20 w-56 h-56 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000">
+            </div>
+            <div
+                class="absolute bottom-20 left-1/2 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000">
+            </div>
         </div>
 
         <div class="relative w-full z-10">
@@ -82,18 +114,23 @@
                     <div class="text-center lg:text-left" data-aos="fade-right">
                         <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl tracking-tight">
                             <span class="block">Analytics Dashboard</span>
-                            <span class="block text-blue-200 text-2xl sm:text-3xl mt-3 font-medium">Comprehensive Vehicle Data Insights</span>
+                            <span class="block text-blue-200 text-2xl sm:text-3xl mt-3 font-medium">Comprehensive
+                                Vehicle Data Insights</span>
                         </h1>
                         <p class="mt-6 text-xl text-blue-100 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            Track market trends, analyze pricing patterns, and gain valuable insights into the automotive industry with our advanced analytics platform. Make data-driven decisions with confidence.
+                            Track market trends, analyze pricing patterns, and gain valuable insights into the
+                            automotive industry with our advanced analytics platform. Make data-driven decisions with
+                            confidence.
                         </p>
                         <div class="mt-10 flex flex-wrap justify-center lg:justify-start gap-4">
-                            <div class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
+                            <div
+                                class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
                                 <i class="fas fa-chart-bar mr-2"></i>
                                 Real-time Analytics
                                 <span class="ml-2 text-xs bg-green-500/20 px-2 py-1 rounded-full">Live</span>
                             </div>
-                            <div class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
+                            <div
+                                class="inline-flex items-center px-6 py-3 border border-white/20 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition duration-300 transform hover:scale-105">
                                 <i class="fas fa-database mr-2"></i>
                                 Data Insights
                                 <span class="ml-2 text-xs bg-purple-500/20 px-2 py-1 rounded-full">AI</span>
@@ -101,32 +138,37 @@
                         </div>
                         <!-- Added Feature Highlights with Enhanced Design -->
                         <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
                                 <i class="fas fa-bolt text-yellow-400 text-2xl mb-3"></i>
                                 <p class="text-white text-sm font-medium">Real-time Updates</p>
                                 <p class="text-blue-200 text-xs mt-1">Instant data refresh</p>
                             </div>
-                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
                                 <i class="fas fa-shield-alt text-green-400 text-2xl mb-3"></i>
                                 <p class="text-white text-sm font-medium">Secure Data</p>
                                 <p class="text-blue-200 text-xs mt-1">Enterprise-grade security</p>
                             </div>
-                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
                                 <i class="fas fa-brain text-purple-400 text-2xl mb-3"></i>
                                 <p class="text-white text-sm font-medium">AI Powered</p>
                                 <p class="text-blue-200 text-xs mt-1">Smart predictions</p>
                             </div>
-                            <div class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                class="p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
                                 <i class="fas fa-chart-pie text-blue-400 text-2xl mb-3"></i>
                                 <p class="text-white text-sm font-medium">Advanced Analytics</p>
                                 <p class="text-blue-200 text-xs mt-1">Deep insights</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Right Content with Enhanced Glass Effect -->
                     <div class="hidden lg:block relative" data-aos="fade-left">
-                        <div class="relative mx-auto w-full max-w-md backdrop-blur-md bg-white/10 p-8 rounded-2xl shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-500">
+                        <div
+                            class="relative mx-auto w-full max-w-md backdrop-blur-md bg-white/10 p-8 rounded-2xl shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-500">
                             <div class="relative">
                                 <div class="absolute inset-0 bg-white/5 rounded-xl"></div>
                                 <div class="relative p-6 text-white">
@@ -138,22 +180,26 @@
                                         Advanced analytics and data visualization for better decision making
                                     </p>
                                     <div class="mt-8 grid grid-cols-2 gap-6">
-                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                        <div
+                                            class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
                                             <div class="text-3xl font-bold text-white">{{ total_cars }}</div>
                                             <div class="text-sm text-blue-200 mt-1">Total Cars</div>
                                         </div>
-                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                        <div
+                                            class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
                                             <div class="text-3xl font-bold text-white">{{ total_companies }}</div>
                                             <div class="text-sm text-blue-200 mt-1">Companies</div>
                                         </div>
                                     </div>
                                     <!-- Additional Stats -->
                                     <div class="mt-6 grid grid-cols-2 gap-6">
-                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                        <div
+                                            class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
                                             <div class="text-3xl font-bold text-white">{{ avg_price }}</div>
                                             <div class="text-sm text-blue-200 mt-1">Avg. Price</div>
                                         </div>
-                                        <div class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
+                                        <div
+                                            class="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 transform hover:scale-105 transition-all duration-300">
                                             <div class="text-3xl font-bold text-white">{{ avg_mileage }}</div>
                                             <div class="text-sm text-blue-200 mt-1">Avg. Mileage</div>
                                         </div>
@@ -162,9 +208,15 @@
                             </div>
                         </div>
                         <!-- Enhanced Decorative Elements -->
-                        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse blur-xl"></div>
-                        <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-blue-300 rounded-full opacity-20 animate-pulse delay-150 blur-xl"></div>
-                        <div class="absolute top-1/2 right-1/4 w-24 h-24 bg-purple-400 rounded-full opacity-20 animate-pulse delay-300 blur-xl"></div>
+                        <div
+                            class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse blur-xl">
+                        </div>
+                        <div
+                            class="absolute -bottom-8 -left-8 w-40 h-40 bg-blue-300 rounded-full opacity-20 animate-pulse delay-150 blur-xl">
+                        </div>
+                        <div
+                            class="absolute top-1/2 right-1/4 w-24 h-24 bg-purple-400 rounded-full opacity-20 animate-pulse delay-300 blur-xl">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -178,8 +230,8 @@
         <div class="mb-8 text-center" data-aos="fade-up">
             <h2 class="text-3xl font-bold text-gray-800 mb-3">Comprehensive Vehicle Market Analysis</h2>
             <p class="text-gray-600 max-w-3xl mx-auto">
-                Explore detailed insights into the automotive market with our advanced analytics dashboard. 
-                Track trends, compare metrics, and make data-driven decisions with real-time updates and 
+                Explore detailed insights into the automotive market with our advanced analytics dashboard.
+                Track trends, compare metrics, and make data-driven decisions with real-time updates and
                 comprehensive market analysis.
             </p>
             <div class="flex items-center justify-center gap-4 mt-6">
@@ -197,8 +249,11 @@
 
         <!-- Quick Stats Cards with Enhanced Design -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8" data-aos="fade-up">
-            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100 relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-16 -mt-16 transition-all duration-300 group-hover:bg-blue-100"></div>
+            <div
+                class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100 relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-16 -mt-16 transition-all duration-300 group-hover:bg-blue-100">
+                </div>
                 <div class="relative">
                     <div class="flex items-center">
                         <div class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg">
@@ -209,25 +264,19 @@
                                 <p class="text-gray-500 text-sm font-medium">Total Cars</p>
                                 <div class="ml-2 group relative">
                                     <i class="fas fa-info-circle text-gray-400 cursor-help"></i>
-                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                    <div
+                                        class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                                         Total number of vehicles in our database
                                     </div>
                                 </div>
                             </div>
                             <p class="text-2xl font-bold text-gray-800">{{ total_cars }}</p>
-                            <div class="flex items-center mt-1">
-                                <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>12%</span>
-                                <span class="text-xs text-gray-400 ml-2">vs last month</span>
-                            </div>
                         </div>
-                    </div>
-                    <div class="mt-4 text-xs text-gray-400 flex items-center">
-                        <i class="fas fa-clock mr-1"></i>
-                        Updated 5 minutes ago
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+            <div
+                class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg">
                         <i class="fas fa-building text-white text-2xl"></i>
@@ -235,14 +284,11 @@
                     <div class="ml-4">
                         <p class="text-gray-500 text-sm font-medium">Total Companies</p>
                         <p class="text-2xl font-bold text-gray-800">{{ total_companies }}</p>
-                        <div class="flex items-center mt-1">
-                            <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>8%</span>
-                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+            <div
+                class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg">
                         <i class="fas fa-chart-line text-white text-2xl"></i>
@@ -250,14 +296,11 @@
                     <div class="ml-4">
                         <p class="text-gray-500 text-sm font-medium">Avg. Price</p>
                         <p class="text-2xl font-bold text-gray-800">₹{{ avg_price }}</p>
-                        <div class="flex items-center mt-1">
-                            <span class="text-xs text-red-500"><i class="fas fa-arrow-down mr-1"></i>3%</span>
-                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+            <div
+                class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-4 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg">
                         <i class="fas fa-tachometer-alt text-white text-2xl"></i>
@@ -265,69 +308,16 @@
                     <div class="ml-4">
                         <p class="text-gray-500 text-sm font-medium">Avg. Mileage</p>
                         <p class="text-2xl font-bold text-gray-800">{{ avg_mileage }} kmpl</p>
-                        <div class="flex items-center mt-1">
-                            <span class="text-xs text-green-500"><i class="fas fa-arrow-up mr-1"></i>5%</span>
-                            <span class="text-xs text-gray-400 ml-2">vs last month</span>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- New Section: Market Summary -->
-        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Market Summary</h2>
-                    <p class="text-gray-500 mt-1">Quick overview of key market indicators</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        <i class="fas fa-arrow-up mr-1"></i>Market Up
-                    </span>
-                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
-                        <i class="fas fa-ellipsis-v text-gray-500"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-semibold text-gray-800">Market Growth</h3>
-                        <span class="text-green-500">+24%</span>
-                    </div>
-                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-green-500 rounded-full" style="width: 75%"></div>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-2">Strong growth in Q4 2023</p>
-                </div>
-                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-semibold text-gray-800">Consumer Confidence</h3>
-                        <span class="text-blue-500">82%</span>
-                    </div>
-                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-500 rounded-full" style="width: 82%"></div>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-2">High buyer confidence level</p>
-                </div>
-                <div class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-semibold text-gray-800">Market Share</h3>
-                        <span class="text-purple-500">65%</span>
-                    </div>
-                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-purple-500 rounded-full" style="width: 65%"></div>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-2">Leading market position</p>
-                </div>
-            </div>
-        </div>
-
+        
         <!-- Enhanced Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
             <!-- Price Trends Chart -->
-            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100 relative overflow-hidden" data-aos="fade-right">
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100 relative overflow-hidden"
+                data-aos="fade-right">
                 <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-bl-full -mr-20 -mt-20 z-0"></div>
                 <div class="relative z-10">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -335,7 +325,8 @@
                             <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Price Trends by Year</h2>
                             <p class="text-sm text-gray-500 mt-1">Historical price analysis across years</p>
                         </div>
-                        <select id="companyFilter" class="w-full sm:w-auto border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                        <select id="companyFilter"
+                            class="w-full sm:w-auto border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
                             <option value="all">All Companies</option>
                             {% for company in companies %}
                             <option value="{{ company }}">{{ company }}</option>
@@ -349,7 +340,8 @@
             </div>
 
             <!-- Popular Car Companies Chart -->
-            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-left">
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+                data-aos="fade-left">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800">Popular Car Companies</h2>
                     <p class="text-sm text-gray-500 mt-1">Market share distribution by manufacturer</p>
@@ -360,13 +352,15 @@
             </div>
 
             <!-- Fuel Type Distribution Chart -->
-            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-right">
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+                data-aos="fade-right">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h2 class="text-3xl font-bold text-gray-800">Fuel Type Distribution</h2>
                         <p class="text-sm text-gray-500 mt-1">Analysis of fuel preferences in the market</p>
                     </div>
-                    <select id="fuelCompanyFilter" class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                    <select id="fuelCompanyFilter"
+                        class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
                         <option value="all">All Companies</option>
                         {% for company in companies %}
                         <option value="{{ company }}">{{ company }}</option>
@@ -379,13 +373,15 @@
             </div>
 
             <!-- Region Distribution Chart -->
-            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100" data-aos="fade-left">
+            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+                data-aos="fade-left">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h2 class="text-3xl font-bold text-gray-800">Sales by Region</h2>
                         <p class="text-sm text-gray-500 mt-1">Regional sales distribution and pricing analysis</p>
                     </div>
-                    <select id="regionCompanyFilter" class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
+                    <select id="regionCompanyFilter"
+                        class="border rounded-lg px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm hover:border-blue-400 transition-colors duration-200">
                         <option value="all">All Companies</option>
                         {% for company in companies %}
                         <option value="{{ company }}">{{ company }}</option>
@@ -398,6 +394,140 @@
             </div>
         </div>
 
+        <!-- Add Car Survey Section -->
+        <div class="save-comparison-card mt-12" data-aos="fade-up">
+            <div
+                class="bg-gradient-to-br from-blue-50 via-white to-blue-50 rounded-2xl shadow-xl p-8 border border-blue-100 hover:shadow-2xl transition-all duration-300">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <!-- Left Content -->
+                    <div class="text-center md:text-left max-w-lg">
+                        <span
+                            class="inline-block px-4 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold mb-4">
+                            <i class="fas fa-star-half-alt mr-2"></i>Share Your Experience
+                        </span>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-4 leading-tight">
+                            Help Others Make Better Decisions
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Your experience matters! Share insights about performance, features, and overall
+                            satisfaction to help future car buyers make informed decisions.
+                        </p>
+                        <div class="flex flex-wrap gap-4 justify-center md:justify-start mb-6">
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Quick & Easy
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-shield-alt text-blue-500 mr-2"></i>
+                                100% Secure
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-heart text-red-500 mr-2"></i>
+                                Help Community
+                            </div>
+                        </div>
+                        <button id="openSurveyForm"
+                            class="group relative inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                            <div
+                                class="absolute inset-0 w-3 bg-blue-400 transition-all duration-300 ease-out group-hover:w-full">
+                            </div>
+                            <span class="relative flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                Add Your Survey
+                                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Right Content - Decorative Elements -->
+                    <div class="relative w-full md:w-96 h-64 hidden md:block">
+                        <!-- Background decorative elements -->
+                        <div class="absolute inset-0">
+                            <!-- Animated gradient background -->
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-blue-50/50 rounded-2xl">
+                            </div>
+
+                            <!-- Animated circles -->
+                            <div
+                                class="absolute top-4 right-4 w-32 h-32 bg-blue-200 rounded-full opacity-20 animate-pulse">
+                            </div>
+                            <div
+                                class="absolute bottom-4 left-4 w-24 h-24 bg-purple-200 rounded-full opacity-20 animate-pulse delay-300">
+                            </div>
+                            <div
+                                class="absolute top-1/2 left-1/4 w-16 h-16 bg-pink-200 rounded-full opacity-20 animate-pulse delay-500">
+                            </div>
+
+                            <!-- Decorative patterns -->
+                            <div
+                                class="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_1px_1px,#4F46E5_1px,transparent_0)] bg-[length:16px_16px]">
+                            </div>
+                        </div>
+
+                        <!-- Central content -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64">
+                            <div class="relative">
+                                <!-- Rotating background element -->
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl rotate-3 transform hover:rotate-6 transition-transform duration-500">
+                                </div>
+
+                                <!-- Main content card -->
+                                <div
+                                    class="relative bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/50 transform hover:scale-105 transition-all duration-300">
+                                    <div class="text-center space-y-4">
+                                        <!-- Icon with animation -->
+                                        <div class="relative w-16 h-16 mx-auto">
+                                            <div
+                                                class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20">
+                                            </div>
+                                            <div
+                                                class="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 rounded-full shadow-inner">
+                                                <i class="fas fa-comments text-white text-2xl"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Text content -->
+                                        <div class="space-y-2">
+                                            <h4 class="text-xl font-bold text-gray-800">Your Voice Matters</h4>
+                                            <p class="text-sm text-gray-600">Join our community of car enthusiasts
+                                                sharing valuable insights</p>
+                                        </div>
+
+                                        <!-- Stats -->
+                                        <div class="grid grid-cols-2 gap-4 pt-4">
+                                            <div class="text-center">
+                                                <div class="text-2xl font-bold text-blue-600">250+</div>
+                                                <div class="text-xs text-gray-500">Reviews</div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="text-2xl font-bold text-purple-600">4.2</div>
+                                                <div class="text-xs text-gray-500">Avg Rating</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional floating elements -->
+                        <div class="absolute bottom-0 right-0 transform translate-y-1/4">
+                            <div class="relative w-20 h-20">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-400 rounded-lg opacity-20 rotate-45 animate-pulse">
+                                </div>
+                                <div class="absolute inset-2 bg-white rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-star text-yellow-400 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br><br>
         <!-- New Section: Latest Updates -->
         <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -410,7 +540,8 @@
                 </button>
             </div>
             <div class="space-y-4">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                <div
+                    class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                     <div class="flex-shrink-0 mb-4 sm:mb-0">
                         <i class="fas fa-car-side text-blue-600 text-xl"></i>
                     </div>
@@ -420,7 +551,8 @@
                     </div>
                     <span class="mt-2 sm:mt-0 sm:ml-auto text-xs text-gray-400">2 hours ago</span>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                <div
+                    class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                     <div class="flex-shrink-0 mb-4 sm:mb-0">
                         <i class="fas fa-leaf text-green-600 text-xl"></i>
                     </div>
@@ -430,7 +562,8 @@
                     </div>
                     <span class="mt-2 sm:mt-0 sm:ml-auto text-xs text-gray-400">5 hours ago</span>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                <div
+                    class="flex flex-col sm:flex-row items-start sm:items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                     <div class="flex-shrink-0 mb-4 sm:mb-0">
                         <i class="fas fa-chart-line text-purple-600 text-xl"></i>
                     </div>
@@ -443,84 +576,112 @@
             </div>
         </div>
 
-        <!-- New Section: Market Insights -->
-        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
+        <!-- New Section: Car Analysis Dashboard -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100" data-aos="fade-up">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Market Insights</h2>
-                    <p class="text-gray-500 mt-1">Latest trends and market analysis. 
-                        <a href="https://www.mordorintelligence.com/industry-reports/analysis-of-automobile-industry-in-india" target="_blank" class="text-blue-500 hover:underline">Learn more</a>
-                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800">Car Analysis Dashboard</h2>
+                    <p class="text-gray-500 mt-1">Comprehensive analysis of vehicle performance and trends</p>
                 </div>
                 <div class="flex space-x-2">
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        <i class="fas fa-arrow-trend-up mr-1"></i>Growing Market
-                    </span>
                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                        <i class="fas fa-chart-line mr-1"></i>Trending
+                        <i class="fas fa-chart-pie mr-1"></i>Analytics
+                    </span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                        <i class="fas fa-car mr-1"></i>Performance
                     </span>
                 </div>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                <!-- Performance Metrics -->
+                <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl transform hover:scale-105 transition-all duration-300">
                     <div class="flex items-center mb-3">
-                        <i class="fas fa-trophy text-blue-600 text-xl mr-2"></i>
-                        <h3 class="font-semibold text-gray-800">Top Performers</h3>
+                        <i class="fas fa-tachometer-alt text-blue-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Performance Metrics</h3>
                     </div>
-                    <ul class="space-y-2">
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Tesla Model 3</span>
-                            <span class="text-blue-600">+45%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">BMW i4</span>
-                            <span class="text-blue-600">+38%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Audi e-tron</span>
-                            <span class="text-blue-600">+31%</span>
-                        </li>
-                    </ul>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between bg-white/60 p-3 rounded-lg">
+                            <span class="text-gray-600">Avg. Mileage</span>
+                            <span class="text-blue-600 font-semibold">19 kmpl</span>
+                        </div>
+                        <div class="flex items-center justify-between bg-white/60 p-3 rounded-lg">
+                            <span class="text-gray-600">Avg. Engine Power</span>
+                            <span class="text-blue-600 font-semibold">1200 cc</span>
+                        </div>
+                        <div class="flex items-center justify-between bg-white/60 p-3 rounded-lg">
+                            <span class="text-gray-600">Avg. Max Power</span>
+                            <span class="text-blue-600 font-semibold">100 bhp</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+
+                <!-- Popular Features -->
+                <div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl transform hover:scale-105 transition-all duration-300">
                     <div class="flex items-center mb-3">
-                        <i class="fas fa-leaf text-green-600 text-xl mr-2"></i>
-                        <h3 class="font-semibold text-gray-800">Sustainability Trends</h3>
+                        <i class="fas fa-star text-purple-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Popular Features</h3>
                     </div>
-                    <ul class="space-y-2">
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Electric Vehicles</span>
-                            <span class="text-green-600">+62%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Hybrid Models</span>
-                            <span class="text-green-600">+28%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Carbon Footprint</span>
-                            <span class="text-red-600">-15%</span>
-                        </li>
-                    </ul>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white/60 p-3 rounded-lg text-center">
+                            <i class="fas fa-gas-pump text-purple-500 text-lg mb-2"></i>
+                            <p class="text-sm text-gray-600">Most Common Fuel</p>
+                            <p class="font-semibold text-purple-600">Petrol</p>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-lg text-center">
+                            <i class="fas fa-cog text-purple-500 text-lg mb-2"></i>
+                            <p class="text-sm text-gray-600">Transmission</p>
+                            <p class="font-semibold text-purple-600">Automatic</p>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-lg text-center">
+                            <i class="fas fa-users text-purple-500 text-lg mb-2"></i>
+                            <p class="text-sm text-gray-600">Avg. Seats</p>
+                            <p class="font-semibold text-purple-600">5</p>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-lg text-center">
+                            <i class="fas fa-user text-purple-500 text-lg mb-2"></i>
+                            <p class="text-sm text-gray-600">Owner Type</p>
+                            <p class="font-semibold text-purple-600">Individual</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+
+                <!-- Price Analysis -->
+                <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl transform hover:scale-105 transition-all duration-300">
                     <div class="flex items-center mb-3">
-                        <i class="fas fa-lightbulb text-purple-600 text-xl mr-2"></i>
-                        <h3 class="font-semibold text-gray-800">Innovation Metrics</h3>
+                        <i class="fas fa-tags text-green-600 text-xl mr-2"></i>
+                        <h3 class="font-semibold text-gray-800">Price Analysis</h3>
                     </div>
-                    <ul class="space-y-2">
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">AI Features</span>
-                            <span class="text-purple-600">+85%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Smart Tech</span>
-                            <span class="text-purple-600">+55%</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-600">Safety Systems</span>
-                            <span class="text-purple-600">+42%</span>
-                        </li>
-                    </ul>
+                    <div class="space-y-3">
+                        <div class="bg-white/60 p-3 rounded-lg">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-gray-600">Average Price</span>
+                                <span class="text-green-600 font-semibold">₹ 10,00,000</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-lg">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-gray-600">Price Range</span>
+                                <span class="text-green-600 font-semibold">₹ 10,00,000 - ₹ 15,00,000</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <div class="text-center p-2 bg-white rounded-lg">
+                                <p class="text-sm text-gray-500">Best Value</p>
+                                <p class="font-semibold text-green-600">{{ best_value_model }}</p>
+                            </div>
+                            <div class="text-center p-2 bg-white rounded-lg">
+                                <p class="text-sm text-gray-500">Premium</p>
+                                <p class="font-semibold text-green-600">{{ premium_model }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -528,8 +689,9 @@
         <!-- New Section: Key Metrics -->
         <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100" data-aos="fade-up">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Key Performance Metrics</h2>
-            <p class="text-gray-500 mt-1">Explore detailed key metrics for the automotive industry. 
-                <a href="https://www.marvilano.com/post/compendium-of-48-most-useful-kpis-for-the-automotive-sector" target="_blank" class="text-blue-500 hover:underline">More details</a>
+            <p class="text-gray-500 mt-1">Explore detailed key metrics for the automotive industry.
+                <a href="https://www.marvilano.com/post/compendium-of-48-most-useful-kpis-for-the-automotive-sector"
+                    target="_blank" class="text-blue-500 hover:underline">More details</a>
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
@@ -575,21 +737,21 @@
                     <p class="text-gray-500 mt-1">Detailed insights and interactive data visualization</p>
                 </div>
                 <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                    <button
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
                         <i class="fas fa-download mr-2"></i>Export Data
                     </button>
-                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    <button
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                         <i class="fas fa-sync-alt mr-2"></i>Refresh
                     </button>
                 </div>
             </div>
             <div class="mt-4 w-full overflow-hidden rounded-lg shadow-lg">
                 <div class="relative" style="padding-top: 40%;">
-                    <iframe title="Cars Analysis" 
-                        class="absolute top-0 left-0 w-full h-full rounded-lg"
-                        src="https://app.powerbi.com/reportEmbed?reportId=4b2a1499-5b18-407a-b864-9a06af0466a4&autoAuth=true&ctid=ad1106cc-c3d8-47da-9e8e-bbf2a9512edd" 
-                        frameborder="0" 
-                        allowFullScreen="true">
+                    <iframe title="Cars Analysis" class="absolute top-0 left-0 w-full h-full rounded-lg"
+                        src="https://app.powerbi.com/reportEmbed?reportId=4b2a1499-5b18-407a-b864-9a06af0466a4&autoAuth=true&ctid=ad1106cc-c3d8-47da-9e8e-bbf2a9512edd"
+                        frameborder="0" allowFullScreen="true">
                     </iframe>
                 </div>
             </div>
@@ -599,6 +761,247 @@
     <!-- Include Footer -->
     {% include 'footer.html' %}
 
+    <!-- Modal Form -->
+    <div id="surveyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 w-full max-w-4xl">
+            <div class="relative bg-white rounded-xl shadow-2xl">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-2xl font-semibold text-gray-800">Add Car Survey</h3>
+                    <button id="closeSurveyModal" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 bg-gradient-to-br from-gray-50 to-white">
+                    <form id="carSurveyForm" class="space-y-8">
+                        <!-- Section: Basic Information -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-car-side text-blue-500 mr-2"></i>
+                                Basic Information
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label for="car_company">Car Company*</label>
+                                    <select class="form-control" id="car_company" name="car_company" required>
+                                        <option value="">Select Company</option>
+                                        {% for company in companies %}
+                                            <option value="{{ company }}">{{ company }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Model</label>
+                                    <input type="text" name="car_model" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter car model (e.g., Rapid)">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Variant</label>
+                                    <input type="text" name="car_new_name" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter car variant (e.g., 1.5 TDI Ambition)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturing Year</label>
+                                    <input type="number" name="year" required min="1900" max="2024" 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter manufacturing year">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Price & Usage -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-tags text-green-500 mr-2"></i>
+                                Price & Usage Details
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Selling Price (₹)</label>
+                                    <input type="number" name="selling_price" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter selling price">
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Kilometers Driven</label>
+                                    <input type="number" name="km_driven" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter kilometers driven">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Location -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                                Location Information
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                                    <select name="Region" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select Region</option>
+                                        <option value="Central">Central</option>
+                                        <option value="South">South</option>
+                                        <option value="East">East</option>
+                                        <option value="West">West</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                    <select name="city" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select City</option>
+                                        <option value="Ahmedabad">Ahmedabad</option>
+                                        <option value="Bangalore">Bangalore</option>
+                                        <option value="Chennai">Chennai</option>
+                                        <option value="Coimbatore">Coimbatore</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Hyderabad">Hyderabad</option>
+                                        <option value="Jaipur">Jaipur</option>
+                                        <option value="Kochi">Kochi</option>
+                                        <option value="Kolkata">Kolkata</option>
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Pune">Pune</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Vehicle Specifications -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-cogs text-purple-500 mr-2"></i>
+                                Vehicle Specifications
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                                    <select name="fuel" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select Fuel Type</option>
+                                        <option value="Petrol">Petrol</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="LPG/CNG">LPG/CNG</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
+                                    <select name="transmission" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select Transmission</option>
+                                        <option value="Automatic">Automatic</option>
+                                        <option value="Manual">Manual</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Owner Type</label>
+                                    <select name="owner" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select Owner Type</option>
+                                        <option value="First Owner">First Owner</option>
+                                        <option value="Second Owner">Second Owner</option>
+                                        <option value="Third Owner">Third Owner</option>
+                                        <option value="Fourth & Above Owner">Fourth & Above Owner</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Seats</label>
+                                    <input type="number" name="seats" required min="2" max="10" 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter number of seats">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Technical Details -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-tachometer-alt text-yellow-500 mr-2"></i>
+                                Technical Details
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Mileage (kmpl)</label>
+                                    <input type="number" step="0.01" name="mileage" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter mileage in kmpl">
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Engine (cc)</label>
+                                    <input type="number" name="engine" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter engine capacity">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Max Power (bhp)</label>
+                                    <input type="number" step="0.01" name="max_power" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                        placeholder="Enter maximum power">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Document Upload -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                            <h4 class="text-lg font-semibold text-gray-800 pb-4 border-b flex items-center">
+                                <i class="fas fa-file-upload text-indigo-500 mr-2"></i>
+                                Document Upload
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                                    <select name="document_type" required 
+                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white transition-all duration-200 hover:border-blue-500">
+                                        <option value="">Select Document Type</option>
+                                        <option value="rc_book">Car RC Book</option>
+                                        <option value="puc">Car PUC</option>
+                                        <option value="insurance">Car Insurance</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Upload Document
+                                        <span class="text-xs text-gray-500">(Photo: max 100KB or PDF: max 2MB)</span>
+                                    </label>
+                                    <input type="file" name="document" accept=".pdf,image/*" required 
+                                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="flex justify-end gap-4 pt-4">
+                            <button type="button" id="cancelSurvey" 
+                                class="px-6 py-2.5 border rounded-lg text-gray-600 hover:bg-gray-50 transition-all duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit" 
+                                class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Submit Survey
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize AOS
         AOS.init({
@@ -607,15 +1010,15 @@
         });
 
         // Add blob animation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Price Trends Chart with Company Filter
             const allPriceData = JSON.parse('{{ price_data|tojson|safe }}');
             const priceCtx = document.getElementById('priceTrendsChart').getContext('2d');
             let priceTrendsChart;
 
             function updatePriceTrendsChart(company) {
-                const filteredData = company === 'all' 
-                    ? allPriceData 
+                const filteredData = company === 'all'
+                    ? allPriceData
                     : allPriceData.filter(item => item.company === company);
 
                 // Calculate max price for setting the y-axis scale
@@ -648,7 +1051,7 @@
                                 beginAtZero: true,
                                 max: yAxisMax,
                                 ticks: {
-                                    callback: function(value) {
+                                    callback: function (value) {
                                         return '₹' + (value / 100000).toFixed(1) + 'L';
                                     },
                                     stepSize: yAxisMax / 10 // Create 10 steps on y-axis
@@ -663,7 +1066,7 @@
                         plugins: {
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const value = context.parsed.y;
                                         return '₹' + (value / 100000).toFixed(2) + ' Lakhs';
                                     }
@@ -682,7 +1085,7 @@
             updatePriceTrendsChart('all');
 
             // Add event listener for company filter
-            document.getElementById('companyFilter').addEventListener('change', function(e) {
+            document.getElementById('companyFilter').addEventListener('change', function (e) {
                 updatePriceTrendsChart(e.target.value);
             });
 
@@ -742,7 +1145,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const value = context.raw;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = ((value / total) * 100).toFixed(1);
@@ -766,7 +1169,6 @@
 
                 let chartData;
                 if (company === 'all') {
-                    // Aggregate all fuel types across companies
                     const fuelCounts = {};
                     allFuelData.forEach(item => {
                         const fuelType = item._id;
@@ -781,13 +1183,14 @@
                         data: Object.values(fuelCounts)
                     };
                 } else {
-                    // Filter data for specific company
                     const companyData = allFuelData.filter(item => item.company === company);
                     chartData = {
                         labels: companyData.map(item => item._id),
                         data: companyData.map(item => item.count)
                     };
                 }
+
+                const total = chartData.data.reduce((a, b) => a + b, 0);
 
                 fuelTypeChart = new Chart(fuelCtx, {
                     type: 'doughnut',
@@ -796,12 +1199,12 @@
                         datasets: [{
                             data: chartData.data,
                             backgroundColor: [
-                                'rgba(54, 162, 235, 0.6)',  // Blue for Petrol
-                                'rgba(255, 99, 132, 0.6)',   // Red for Diesel
-                                'rgba(255, 206, 86, 0.6)',   // Yellow for CNG
-                                'rgba(75, 192, 192, 0.6)',   // Green for Electric
-                                'rgba(153, 102, 255, 0.6)',  // Purple for Hybrid
-                                'rgba(255, 159, 64, 0.6)'    // Orange for Others
+                                'rgba(54, 162, 235, 0.8)',   // Blue
+                                'rgba(255, 99, 132, 0.8)',   // Red
+                                'rgba(255, 206, 86, 0.8)',   // Yellow
+                                'rgba(75, 192, 192, 0.8)',   // Green
+                                'rgba(153, 102, 255, 0.8)',  // Purple
+                                'rgba(255, 159, 64, 0.8)'    // Orange
                             ],
                             borderColor: [
                                 'rgba(54, 162, 235, 1)',
@@ -811,7 +1214,7 @@
                                 'rgba(153, 102, 255, 1)',
                                 'rgba(255, 159, 64, 1)'
                             ],
-                            borderWidth: 1
+                            borderWidth: 2
                         }]
                     },
                     options: {
@@ -819,33 +1222,97 @@
                         maintainAspectRatio: false,
                         layout: {
                             padding: {
-                                left: 10,
-                                right: 10,
-                                top: 0,
-                                bottom: 0
+                                left: 20,
+                                right: 20,
+                                top: 20,
+                                bottom: 20
                             }
                         },
                         plugins: {
                             legend: {
                                 position: 'right',
+                                align: 'center',
                                 labels: {
-                                    boxWidth: 12,
-                                    padding: 10,
+                                    boxWidth: 20,
+                                    padding: 20,
                                     font: {
-                                        size: 11
+                                        size: 11,
+                                        weight: 'bold',
+                                        family: "'Segoe UI', Arial, sans-serif"
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    color: '#333333',
+                                    // Corrected legend label generation
+                                    generateLabels: function(chart) {
+                                        const datasets = chart.data.datasets;
+                                        const labels = chart.data.labels;
+                                        
+                                        return labels.map((label, i) => {
+                                            const value = datasets[0].data[i];
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            
+                                            return {
+                                                text: `${label}\n(${value} - ${percentage}%)`,
+                                                fillStyle: datasets[0].backgroundColor[i],
+                                                strokeStyle: datasets[0].borderColor[i],
+                                                lineWidth: 2,
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
                                     }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Fuel Types',
+                                    padding: {
+                                        top: 10,
+                                        bottom: 20
+                                    },
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold',
+                                        family: "'Segoe UI', Arial, sans-serif"
+                                    },
+                                    color: '#333333'
                                 }
                             },
                             tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#333333',
+                                titleFont: {
+                                    size: 14,
+                                    weight: 'bold',
+                                    family: "'Segoe UI', Arial, sans-serif"
+                                },
+                                bodyColor: '#666666',
+                                bodyFont: {
+                                    size: 13,
+                                    family: "'Segoe UI', Arial, sans-serif"
+                                },
+                                borderColor: 'rgba(0,0,0,0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: true,
                                 callbacks: {
                                     label: function(context) {
                                         const value = context.raw;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         const percentage = ((value / total) * 100).toFixed(1);
-                                        return `${context.label}: ${value} cars (${percentage}%)`;
+                                        return [
+                                            `Total Cars: ${value}`,
+                                            `Percentage: ${percentage}%`
+                                        ];
                                     }
                                 }
                             }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true,
+                            duration: 1500,
+                            easing: 'easeInOutQuart'
                         }
                     }
                 });
@@ -855,7 +1322,7 @@
             updateFuelTypeChart('all');
 
             // Add event listener for fuel company filter
-            document.getElementById('fuelCompanyFilter').addEventListener('change', function(e) {
+            document.getElementById('fuelCompanyFilter').addEventListener('change', function (e) {
                 updateFuelTypeChart(e.target.value);
             });
 
@@ -882,7 +1349,7 @@
                         counts: [],
                         avgPrices: []
                     };
-                    
+
                     regionData.forEach(region => {
                         const companyData = region.company_data.find(cd => cd.company === company);
                         if (companyData) {
@@ -975,15 +1442,15 @@
                                     font: {
                                         size: 11
                                     },
-                                    color: 'rgba(220, 38, 38, 0.8)',
-                                    callback: function(value) {
+                                    color: 'rgba(0, 0, 0, 0.7)',
+                                    callback: function (value) {
                                         return '₹' + (value / 100000).toFixed(1) + 'L';
                                     }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Average Price (₹)',
-                                    color: 'rgba(220, 38, 38, 0.8)',
+                                    color: 'rgba(0, 0, 0, 0.7)',
                                     font: {
                                         size: 12,
                                         weight: '500'
@@ -1028,7 +1495,7 @@
                                 padding: 12,
                                 cornerRadius: 8,
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const value = context.raw;
                                         if (context.dataset.label === 'Average Price') {
                                             return `Average Price: ₹${(value / 100000).toFixed(2)}L`;
@@ -1046,18 +1513,18 @@
             updateRegionChart('all');
 
             // Add event listener for region company filter
-            document.getElementById('regionCompanyFilter').addEventListener('change', function(e) {
+            document.getElementById('regionCompanyFilter').addEventListener('change', function (e) {
                 updateRegionChart(e.target.value);
             });
         });
 
         // Add hover effects for cards
         document.querySelectorAll('.rounded-xl').forEach(card => {
-            card.addEventListener('mouseenter', function() {
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-5px)';
                 this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
             });
-            card.addEventListener('mouseleave', function() {
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'translateY(0)';
                 this.style.boxShadow = '';
             });
@@ -1065,13 +1532,205 @@
 
         // Enhanced hover effects
         document.querySelectorAll('.hover-effect').forEach(element => {
-            element.addEventListener('mouseenter', function() {
+            element.addEventListener('mouseenter', function () {
                 this.classList.add('transform', 'scale-105', 'shadow-lg');
             });
-            element.addEventListener('mouseleave', function() {
+            element.addEventListener('mouseleave', function () {
                 this.classList.remove('transform', 'scale-105', 'shadow-lg');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('surveyModal');
+            const openButton = document.getElementById('openSurveyForm');
+            const closeButton = document.getElementById('closeSurveyModal');
+            const cancelButton = document.getElementById('cancelSurvey');
+            const form = document.getElementById('carSurveyForm');
+
+            // Open modal
+            openButton.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Close modal functions
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            };
+
+            closeButton.addEventListener('click', closeModal);
+            cancelButton.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Form submission handler
+            const carSurveyForm = document.getElementById('carSurveyForm');
+            carSurveyForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get the submit button
+                const submitButton = document.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                
+                // Function to set button to processing state
+                const setProcessingState = () => {
+                    submitButton.classList.add('processing');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="processing-spinner"></span>Processing...';
+                };
+                
+                // Function to reset button state
+                const resetButtonState = () => {
+                    submitButton.classList.remove('processing');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                };
+                
+                // Function to show error state
+                const setErrorState = () => {
+                    submitButton.classList.remove('processing');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = 'Edit Form Details';
+                    submitButton.style.backgroundColor = '#dc3545';
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        submitButton.innerHTML = originalButtonText;
+                        submitButton.style.backgroundColor = '';
+                    }, 2000);
+                };
+
+                try {
+                    // Set processing state
+                    setProcessingState();
+
+                    // Validate form fields
+                    const requiredFields = [
+                        'car_company', 'car_model', 'car_new_name', 'year', 
+                        'selling_price', 'km_driven', 'Region', 'city',
+                        'fuel', 'transmission', 'owner', 'mileage',
+                        'engine', 'max_power', 'seats'
+                    ];
+
+                    const missingFields = requiredFields.filter(field => {
+                        const input = document.querySelector(`[name="${field}"]`);
+                        return !input.value.trim();
+                    });
+
+                    if (missingFields.length > 0) {
+                        throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+                    }
+
+                    // Get form data
+                    const formData = new FormData(this);
+                    
+                    // Validate file if uploaded
+                    const documentFile = formData.get('document');
+                    if (documentFile && documentFile.size > 0) {
+                        const fileType = documentFile.type;
+                        const fileSize = documentFile.size;
+                        
+                        // Check file type
+                        if (!['application/pdf', 'image/jpeg', 'image/png'].includes(fileType)) {
+                            throw new Error('Invalid file type. Please upload PDF or image files only.');
+                        }
+                        
+                        // Check file size
+                        const maxSize = fileType === 'application/pdf' ? 2 * 1024 * 1024 : 100 * 1024;
+                        if (fileSize > maxSize) {
+                            throw new Error(`File size too large. Maximum size is ${maxSize === 2 * 1024 * 1024 ? '2MB' : '100KB'}`);
+                        }
+                    }
+
+                    // Submit form
+                    const response = await fetch('/addcarsurvey', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Failed to submit survey');
+                    }
+
+                    // Success
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: result.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    // Reset form and close modal
+                    this.reset();
+                    document.getElementById('surveyModal').style.display = 'none';
+                    resetButtonState();
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'Failed to submit survey'
+                    });
+                    
+                    setErrorState();
+                }
+            });
+
+            // Add this to handle modal close button
+            document.querySelector('.close').addEventListener('click', function() {
+                document.getElementById('surveyModal').style.display = 'none';
+                // Reset form and button state
+                document.getElementById('carSurveyForm').reset();
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.innerHTML = 'Submit Survey';
+                submitButton.classList.remove('processing');
+                submitButton.disabled = false;
+                submitButton.style.backgroundColor = '';
+            });
+
+            // Populate company dropdown
+            const companySelect = document.querySelector('select[name="car_company"]');
+            const companies = JSON.parse('{{ companies|tojson|safe }}');
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company;
+                option.textContent = company;
+                companySelect.appendChild(option);
+            });
+
+            // Add placeholders to all input fields
+            const placeholders = {
+                'car_model': 'Enter car model (e.g., Rapid)',
+                'car_new_name': 'Enter car variant (e.g., 1.5 TDI Ambition)',
+                'year': 'Enter manufacturing year',
+                'selling_price': 'Enter selling price in ₹',
+                'km_driven': 'Enter kilometers driven',
+                'mileage': 'Enter mileage in kmpl',
+                'engine': 'Enter engine capacity in cc',
+                'max_power': 'Enter max power in bhp',
+                'seats': 'Enter number of seats'
+            };
+
+            Object.entries(placeholders).forEach(([name, placeholder]) => {
+                const input = document.querySelector(`input[name="${name}"]`);
+                if (input) {
+                    input.placeholder = placeholder;
+                }
             });
         });
     </script>
 </body>
+
 </html>

@@ -7,76 +7,346 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
     <!-- Navigation Bar -->
     {% include 'navbar.html' %}
+    
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl font-bold mb-6">Find Your Perfect Car Match</h1>
+                    <p class="text-xl mb-8">Advanced AI-powered recommendations based on your preferences and lifestyle</p>
+                    <div class="flex space-x-4">
+                        <a href="#filters" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                            Start Search
+                        </a>
+                        <a href="#how-it-works" class="border border-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                            How It Works
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <img src="/static/images/hero-car.png" alt="Luxury Car" class="w-full">
+                </div>
+            </div>
+        </div>
+        <!-- <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-50"></div> -->
+    </div>
+
+    <br><br><br>    
+    <!-- Stats Section -->
+    <div class="container mx-auto px-6 -mt-10 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2">10,000+</div>
+                <div class="text-gray-600">Cars Available</div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2">5,000+</div>
+                <div class="text-gray-600">Happy Customers</div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2">50+</div>
+                <div class="text-gray-600">Brands</div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2">24/7</div>
+                <div class="text-gray-600">Expert Support</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-8">Car Recommendations</h1>
-        
-        <!-- Filters Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-semibold mb-4">Find Your Perfect Car</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="container mx-auto p-6" id="filters">
+        <!-- Advanced Filters Section -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12 border border-gray-100">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                <i class="fas fa-filter mr-3 text-blue-500"></i>
+                Advanced Search Filters
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Budget Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget (in ₹)</label>
-                    <input type="range" id="budget" min="100000" max="10000000" step="100000" class="w-full" value="5000000">
-                    <div class="text-sm text-gray-600 mt-1">
-                        Selected: ₹<span id="budgetValue">5000000</span>
+                <div class="filter-card p-4 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-rupee-sign mr-2 text-blue-500"></i>Budget Range
+                    </label>
+                    <div class="flex space-x-2">
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Min (₹)</label>
+                            <input type="number" id="minBudget" min="100000" max="10000000" step="100000"
+                                   class="w-full p-2 border rounded-md" placeholder="Min Budget">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Max (₹)</label>
+                            <input type="number" id="maxBudget" min="100000" max="10000000" step="100000"
+                                   class="w-full p-2 border rounded-md" placeholder="Max Budget">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engine Range -->
+                <div class="filter-card p-4 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-engine mr-2 text-blue-500"></i>Engine Range (cc)
+                    </label>
+                    <div class="flex space-x-2">
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Min (cc)</label>
+                            <input type="number" id="minEngine" min="624" max="6592" step="100"
+                                   class="w-full p-2 border rounded-md" placeholder="Min Engine">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Max (cc)</label>
+                            <input type="number" id="maxEngine" min="624" max="6592" step="100"
+                                   class="w-full p-2 border rounded-md" placeholder="Max Engine">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mileage Range -->
+                <div class="filter-card p-4 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-tachometer-alt mr-2 text-blue-500"></i>Mileage Range (KMPL)
+                    </label>
+                    <div class="flex space-x-2">
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Min (kmpl)</label>
+                            <input type="number" id="minMileage" min="0" max="30" step="1"
+                                   class="w-full p-2 border rounded-md" placeholder="Min Mileage">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-xs text-gray-600 mb-1">Max (kmpl)</label>
+                            <input type="number" id="maxMileage" min="0" max="30" step="1"
+                                   class="w-full p-2 border rounded-md" placeholder="Max Mileage">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Fuel Type Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                <div class="filter-card p-4 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-gas-pump mr-2 text-blue-500"></i>Fuel Type
+                    </label>
                     <select id="fuelType" class="w-full border rounded-md p-2">
                         <option value="">All Fuel Types</option>
-                        {% for fuel_type in fuel_types %}
-                        <option value="{{ fuel_type }}">{{ fuel_type }}</option>
-                        {% endfor %}
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Electric">Electric</option>
+                        <option value="CNG">CNG</option>
+                        <option value="Mild Hybrid(Electric + Petrol)">Mild Hybrid(Electric + Petrol)</option>
+                        <option value="Mild Hybrid(Electric + Diesel)">Mild Hybrid(Electric + Diesel)</option>
+                        <option value="Plug-in Hybrid (Electric + Petrol)">Plug-in Hybrid (Electric + Petrol)</option>
                     </select>
                 </div>
 
-                <!-- Body Type Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Body Type</label>
-                    <select id="bodyType" class="w-full border rounded-md p-2">
-                        <option value="">All Body Types</option>
-                        {% for body_type in body_types %}
-                        <option value="{{ body_type }}">{{ body_type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Brand Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                    <select id="brand" class="w-full border rounded-md p-2">
-                        <option value="">All Brands</option>
-                        {% for brand in brands %}
-                        <option value="{{ brand }}">{{ brand }}</option>
-                        {% endfor %}
+                <!-- Transmission Filter -->
+                <div class="filter-card p-4 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-cog mr-2 text-blue-500"></i>Transmission
+                    </label>
+                    <select id="transmission" class="w-full border rounded-md p-2">
+                        <option value="">All Transmissions</option>
+                        <option value="Manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
                     </select>
                 </div>
             </div>
             
             <!-- Search Button -->
-            <button id="searchBtn" class="mt-6 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 w-full md:w-auto">
-                Find Cars
+            <button id="searchBtn" class="mt-8 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 
+                                        transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center mx-auto">
+                <i class="fas fa-search mr-2"></i>
+                Find My Perfect Car
             </button>
         </div>
 
-        <!-- Results Section -->
-        <div id="resultsSection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Popular Searches -->
+        <div class="mb-12">
+            <h3 class="text-xl font-semibold mb-4">Popular Searches</h3>
+            <div class="flex flex-wrap gap-3">
+                <button class="px-4 py-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200">SUVs under 15L</button>
+                <button class="px-4 py-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200">Electric Cars</button>
+                <button class="px-4 py-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200">Luxury Sedans</button>
+                <!-- Add more popular searches -->
+            </div>
+        </div>
+
+        <!-- Results Section with Enhanced Cards -->
+        <div id="resultsSection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Results will be populated here -->
         </div>
 
-        <!-- Loading Spinner -->
-        <div id="loadingSpinner" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+        <!-- Price Prediction Form -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12 border border-gray-100">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                <i class="fas fa-calculator mr-3 text-blue-500"></i>
+                Car Price Predictor
+            </h2>
+            <form id="pricePredictionForm" action="/predict_price" method="POST" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Make/Company -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Make</label>
+                    <select id="carCompany" class="w-full border rounded-md p-2" required>
+                        <option value="">Select Make</option>
+                        {% for brand in brands %}
+                        <option value="{{ brand }}">{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Fuel Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                    <select id="fuel_type" class="w-full border rounded-md p-2" required>
+                        <option value="">Select Fuel Type</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="CNG">CNG</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+
+                <!-- Transmission -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
+                    <select id="transmission" class="w-full border rounded-md p-2" required>
+                        <option value="">Select Transmission</option>
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+                </div>
+
+                <!-- Color -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                    <select id="color" class="w-full border rounded-md p-2" required>
+                        <option value="">Select Color</option>
+                        <option value="Black">Black</option>
+                        <option value="White">White</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Red">Red</option>
+                        <option value="Blue">Blue</option>
+                    </select>
+                </div>
+
+                <!-- Year -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Year (1988-2022)</label>
+                    <input type="number" id="year" min="1988" max="2025" class="w-full border rounded-md p-2" required>
+                </div>
+
+                <!-- Kilometers Driven -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kilometers Driven</label>
+                    <input type="number" id="kmDriven" class="w-full border rounded-md p-2" required>
+                </div>
+
+                <!-- Engine Capacity -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Engine Capacity (cc)</label>
+                    <input type="number" id="engine" min="624" max="6592" class="w-full border rounded-md p-2" required>
+                </div>
+
+                <!-- Max Power -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Max Power (bhp)</label>
+                    <input type="number" id="maxPower" min="35" max="660" class="w-full border rounded-md p-2" required>
+                </div>
+
+                <!-- Seating Capacity -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Seating Capacity</label>
+                    <input type="number" id="seats" min="2" max="8" class="w-full border rounded-md p-2" required>
+                </div>
+
+                <!-- Fuel Tank Capacity -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fuel Tank Capacity (L)</label>
+                    <input type="number" id="fuelTank" min="30" max="60" class="w-full border rounded-md p-2" required>
+                </div>
+            </form>
+
+            <!-- Predict Button -->
+            <button id="predictBtn" class="mt-8 bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 
+                                        transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center mx-auto">
+                <i class="fas fa-calculator mr-2"></i>
+                Predict Price
+            </button>
+
+            <!-- Prediction Result -->
+            <div id="predictionResult" class="mt-8 hidden">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-calculator mr-3 text-green-500"></i>
+                                Predicted Price
+                            </h3>
+                            <span class="text-sm text-gray-500">Based on provided specifications</span>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-lg p-6 mb-6">
+                            <div class="text-4xl font-bold text-green-600 text-center" id="predictedPrice"></div>
+                            <div class="text-sm text-green-700 text-center mt-2">Estimated Market Value</div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-700 mb-4">Features Used for Prediction</h4>
+                            <div id="predictionDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Features will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <!-- How It Works Section -->
+    <div id="how-it-works" class="bg-gray-100 py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12">How Our Recommendation System Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-white p-6 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-3xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Set Your Preferences</h3>
+                    <p class="text-gray-600">Tell us what you're looking for in your ideal car</p>
+                </div>
+                <!-- Add more steps -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Expert Advice Section -->
+    <div class="container mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-center mb-12">Expert Car Buying Advice</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Add expert advice cards -->
+        </div>
+    </div>
+
+    <!-- Enhanced Footer -->
+    {% include 'footer.html' %}
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="container mx-auto p-6 hidden">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Recommended Cars</h2>
+        <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Recommendations will be displayed here -->
         </div>
     </div>
 
@@ -84,9 +354,31 @@
         // Update budget value display
         const budgetInput = document.getElementById('budget');
         const budgetValue = document.getElementById('budgetValue');
+        const minBudget = document.getElementById('minBudget');
+        const maxBudget = document.getElementById('maxBudget');
         
         budgetInput.addEventListener('input', function() {
             budgetValue.textContent = this.value;
+        });
+
+        // Update engine value display
+        const engineInput = document.getElementById('engine');
+        const engineValue = document.getElementById('engineValue');
+        const minEngine = document.getElementById('minEngine');
+        const maxEngine = document.getElementById('maxEngine');
+        
+        engineInput.addEventListener('input', function() {
+            engineValue.textContent = this.value;
+        });
+
+        // Update mileage value display
+        const mileageInput = document.getElementById('mileage');
+        const mileageValue = document.getElementById('mileageValue');
+        const minMileage = document.getElementById('minMileage');
+        const maxMileage = document.getElementById('maxMileage');
+        
+        mileageInput.addEventListener('input', function() {
+            mileageValue.textContent = this.value;
         });
 
         // Handle search
@@ -100,10 +392,14 @@
 
             // Get filter values
             const filters = {
-                budget: document.getElementById('budget').value,
+                min_budget: document.getElementById('minBudget').value,
+                max_budget: document.getElementById('maxBudget').value,
+                min_engine: document.getElementById('minEngine').value,
+                max_engine: document.getElementById('maxEngine').value,
+                min_mileage: document.getElementById('minMileage').value,
+                max_mileage: document.getElementById('maxMileage').value,
                 fuel_type: document.getElementById('fuelType').value,
-                body_type: document.getElementById('bodyType').value,
-                brand: document.getElementById('brand').value
+                transmission: document.getElementById('transmission').value
             };
 
             // Make API call
@@ -131,27 +427,53 @@
             resultsSection.innerHTML = '';
 
             if (cars.length === 0) {
-                resultsSection.innerHTML = '<p class="col-span-full text-center text-gray-500">No cars found matching your criteria</p>';
+                resultsSection.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-car-crash text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500 text-xl">No cars found matching your criteria</p>
+                        <p class="text-gray-400 mt-2">Try adjusting your filters for more results</p>
+                    </div>`;
                 return;
             }
 
             cars.forEach(car => {
                 const carCard = `
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <img src="${car.image_url}" alt="${car.company} ${car.model}" 
-                             class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold">${car.company} ${car.model}</h3>
-                            <div class="mt-2 space-y-1">
-                                <p class="text-gray-600"><i class="fas fa-gas-pump mr-2"></i>${car.fuel_type}</p>
-                                <p class="text-gray-600"><i class="fas fa-cog mr-2"></i>${car.transmission}</p>
-                                <p class="text-gray-600"><i class="fas fa-tachometer-alt mr-2"></i>${car.mileage} kmpl</p>
-                                <p class="text-gray-600"><i class="fas fa-calendar mr-2"></i>${car.year}</p>
-                                <p class="text-xl font-bold text-blue-600 mt-2">₹${car.selling_price.toLocaleString()}</p>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                        <div class="relative">
+                            <img src="${car.image_url}" alt="${car.company} ${car.model}" 
+                                 class="w-full h-56 object-cover">
+                            <div class="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                                ${car.year}
                             </div>
-                            <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full">
-                                View Details
-                            </button>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3">${car.company} ${car.model}</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-gas-pump text-blue-500 mr-2"></i>
+                                    ${car.fuel_type}
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-cog text-blue-500 mr-2"></i>
+                                    ${car.transmission}
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                                    ${car.mileage} kmpl
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-road text-blue-500 mr-2"></i>
+                                    ${car.kilometers_driven} km
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-6">
+                                <p class="text-2xl font-bold text-blue-600">₹${car.selling_price.toLocaleString()}</p>
+                                <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 
+                                           transition duration-300 flex items-center">
+                                    <span>Details</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -161,6 +483,246 @@
 
         // Trigger search on page load
         document.getElementById('searchBtn').click();
+
+        // Add new interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Initialize any additional plugins or features
+        });
+
+        // Price Prediction
+        document.getElementById('predictBtn').addEventListener('click', async function() {
+            const form = document.getElementById('pricePredictionForm');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const predictionResult = document.getElementById('predictionResult');
+            const predictedPrice = document.getElementById('predictedPrice');
+            const predictionDetails = document.getElementById('predictionDetails');
+            
+            // Show loading spinner
+            loadingSpinner.classList.remove('hidden');
+            predictionResult.classList.add('hidden');
+
+            try {
+                // Get form data with correct field names
+                const formData = {
+                    car_company: document.getElementById('carCompany').value,
+                    fuel_type: document.getElementById('fuel_type').value,
+                    transmission: document.getElementById('transmission').value,
+                    color: document.getElementById('color').value,
+                    year: parseInt(document.getElementById('year').value),
+                    km_driven: parseFloat(document.getElementById('kmDriven').value),
+                    engine: parseFloat(document.getElementById('engine').value),
+                    max_power: parseFloat(document.getElementById('maxPower').value),
+                    seats: parseInt(document.getElementById('seats').value),
+                    fuel_tank: parseFloat(document.getElementById('fuelTank').value)
+                };
+
+                // Validate all required fields
+                const requiredFields = ['car_company', 'fuel_type', 'transmission', 'year', 'km_driven', 
+                                      'engine', 'max_power', 'seats', 'fuel_tank'];
+                const missingFields = requiredFields.filter(field => !formData[field]);
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+                }
+
+                // Log the form data for debugging
+                console.log('Form data being sent:', formData);
+
+                const response = await fetch('/predict_price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log('Received response:', result);
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                // Format the price with Indian Rupee format
+                const formattedPrice = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    maximumFractionDigits: 0
+                }).format(result.predicted_price);
+
+                // Update the UI
+                predictedPrice.textContent = formattedPrice;
+                predictionResult.classList.remove('hidden');
+                
+                // Create feature cards with icons
+                predictionDetails.innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-car text-blue-500 mr-2"></i>
+                            <span class="font-medium">Make:</span>
+                            <span class="ml-2">${result.features_used.car_company}</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-gas-pump text-green-500 mr-2"></i>
+                            <span class="font-medium">Fuel Type:</span>
+                            <span class="ml-2">${result.features_used.fuel_type}</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-cog text-purple-500 mr-2"></i>
+                            <span class="font-medium">Transmission:</span>
+                            <span class="ml-2">${result.features_used.transmission}</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-paint-brush text-red-500 mr-2"></i>
+                            <span class="font-medium">Color:</span>
+                            <span class="ml-2">${result.features_used.color}</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-calendar text-yellow-500 mr-2"></i>
+                            <span class="font-medium">Year:</span>
+                            <span class="ml-2">${result.features_used.year}</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-road text-indigo-500 mr-2"></i>
+                            <span class="font-medium">Kilometers Driven:</span>
+                            <span class="ml-2">${result.features_used.km_driven.toLocaleString()} km</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-engine text-orange-500 mr-2"></i>
+                            <span class="font-medium">Engine:</span>
+                            <span class="ml-2">${result.features_used.engine} cc</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-bolt text-pink-500 mr-2"></i>
+                            <span class="font-medium">Max Power:</span>
+                            <span class="ml-2">${result.features_used.max_power} bhp</span>
+                        </div>
+                        <div class="flex items-center text-gray-700 mb-2">
+                            <i class="fas fa-users text-teal-500 mr-2"></i>
+                            <span class="font-medium">Seats:</span>
+                            <span class="ml-2">${result.features_used.seats}</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-gas-pump text-cyan-500 mr-2"></i>
+                            <span class="font-medium">Fuel Tank:</span>
+                            <span class="ml-2">${result.features_used.fuel_tank} L</span>
+                        </div>
+                    </div>
+                `;
+
+                // Scroll to prediction result
+                predictionResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message);
+            } finally {
+                // Hide loading spinner
+                loadingSpinner.classList.add('hidden');
+            }
+        });
+
+        function getRecommendations() {
+            // Get all filter values
+            const filters = {
+                minBudget: document.getElementById('minBudget').value,
+                maxBudget: document.getElementById('maxBudget').value,
+                minEngine: document.getElementById('minEngine').value,
+                maxEngine: document.getElementById('maxEngine').value,
+                fuelType: document.getElementById('fuelType').value,
+                transmission: document.getElementById('transmission').value,
+                brand: document.getElementById('brand').value
+            };
+
+            // Show loading state
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('recommendations-container').innerHTML = '<div class="col-span-full text-center"><i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i></div>';
+
+            // Make API call
+            fetch('/get_recommendation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filters)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayRecommendations(data.recommendations);
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                document.getElementById('recommendations-container').innerHTML = `
+                    <div class="col-span-full text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendations-container');
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500">
+                        <i class="fas fa-search text-4xl mb-2"></i>
+                        <p>No cars found matching your criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recommendations.map(car => `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">${car.Make} ${car.Model}</h3>
+                        <p class="text-gray-600 mb-4">${car.Variant}</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Price</p>
+                                <p class="font-semibold">₹${car.Price.toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Engine</p>
+                                <p class="font-semibold">${car.Engine} cc</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Fuel Type</p>
+                                <p class="font-semibold">${car['Fuel Type']}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Transmission</p>
+                                <p class="font-semibold">${car.Transmission}</p>
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='/car_details/${car.id}'" 
+                                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add event listener to the search button
+        document.getElementById('searchButton').addEventListener('click', getRecommendations);
     </script>
 </body>
 </html>
