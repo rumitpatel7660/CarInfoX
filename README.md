@@ -20,8 +20,18 @@
 - **Visualization** Chart.js, Microsoft PowerBI
 - **Authentication** JWT, Google OAuth
 
-## 📷 Preview
-![Project Screenshot](https://raw.githubusercontent.com/rumitpatel7660/CarInfoX-Smart-Automobile-Data/main/preview.png) *(Upload and replace with actual image)*
+## 📷 Screenshots
+#### HomePage
+![](screenshots/ss4.png)
+![](screenshots/ss3.png)
+
+#### Analysis Dashboard
+![](screenshots/ss5.png)
+![](screenshots/ss6.png)
+
+#### Car Comaprison
+![](screenshots/ss1.png)
+![](screenshots/ss7.png)
 
 ## 📂 Installation
 Follow these steps to set up the project locally:
