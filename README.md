@@ -22,16 +22,16 @@
 
 ## 📷 Screenshots
 #### HomePage
-![](screenshots/ss4.png)
-![](screenshots/ss3.png)
+![](Screenshots/ss4.png)
+![](Screenshots/ss3.png)
 
 #### Analysis Dashboard
-![](screenshots/ss5.png)
-![](screenshots/ss6.png)
+![](Screenshots/ss5.png)
+![](Screenshots/ss6.png)
 
 #### Car Comaprison
-![](screenshots/ss1.png)
-![](screenshots/ss7.png)
+![](Screenshots/ss1.png)
+![](Screenshots/ss7.png)
 
 ## 📂 Installation
 Follow these steps to set up the project locally:
