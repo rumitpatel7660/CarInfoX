@@ -276,7 +276,7 @@ def comparison():
         for model in models:
             variants=car_data.distinct("car_new_name",{"car_model": model})
             car_variants[model]=variants
-    return render_template('c.html', car_company=car_company, car_model=car_models, car_variant=car_variants, user=user)
+    return render_template('comparison.html', car_company=car_company, car_model=car_models, car_variant=car_variants, user=user)
 
 @app.route('/compare_cars', methods=['POST'])
 @login_required
@@ -1051,12 +1051,6 @@ def dashboard():
                         fuel_data=fuel_data,
                         user=user,
                         region_data=region_data)
-
-# Latest Cars page API
-@app.route('/latest_cars')
-def latest_cars():
-    user = get_current_user()
-    return render_template('latest_cars.html', user=user)
 
 # Car Review page API
 @app.route('/car_review')
