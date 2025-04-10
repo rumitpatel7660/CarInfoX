@@ -4,7 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Review - CarInfoX</title>
+    <title>Car Reviews & Ratings - Expert Car Analysis | CarInfoX</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Read comprehensive car reviews, expert ratings, and detailed analysis of various car models. Get insights into performance, features, and real-world driving experiences.">
+    <meta name="keywords" content="car reviews, car ratings, expert car analysis, vehicle reviews, car performance, car features, automotive reviews">
+    <meta name="author" content="CarInfoX">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Car Reviews & Ratings - Expert Car Analysis | CarInfoX">
+    <meta property="og:description" content="Access expert car reviews and ratings to make informed decisions about your next vehicle purchase.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://carinfox.com/car-review">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -243,32 +254,27 @@
                 <form id="reviewForm" class="space-y-6" action="/submit_review" method="POST">
                     <!-- Car Selection -->
                     <div>
-                        <label for="carSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Car</label>
+                        <label for="carCompany" class="block text-sm font-medium text-gray-700 mb-2">Select Car Company</label>
                         <div class="relative">
-                            <select id="carSelect" name="car" required
+                            <select id="carCompany" name="car_company" required
                                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-10">
-                                <option value="select car">Choose a car...</option>
-                                <option value="Hyundai Creta">Hyundai Creta</option>
-                                <option value="Audi A5">Audi A5</option>
-                                <option value="Toyota Innova Cresta">Toyota Innova Cresta</option>
-                                <option value="BMW X1">BMW X1</option>
-                                <option value="Tata Harriar">Tata Harriar</option>
-                                <option value="MG Hector">MG Hector</option>
-                                <option value="Maruti Suzuki Swift">Maruti Suzuki Swift</option>
-                                <option value="Mahindra Thar">Mahindra Thar</option>
-                                <option value="Ford EcoSport">Ford EcoSport</option>
-                                <option value="Jeep Compass">Jeep Compass</option>
-                                <option value="Volkswagen Polo">Volkswagen Polo</option>
-                                <option value="Skoda Octavia">Skoda Octavia</option>
-                                <option value="Renault Duster">Renault Duster</option>
-                                <option value="Nissan Magnite">Nissan Magnite</option>
-                                <option value="Mercedes-Benz E-Class">Mercedes-Benz E-Class</option>
-                                <option value="Land Rover Range Rover">Land Rover Range Rover</option>
-                                <option value="Jaguar F-Type">Jaguar F-Type</option>
-                                <option value="Hyundai i20">Hyundai i20</option>
-                                <option value="Honda City">Honda City</option>
-                                <option value="Kia Seltos">Kia Seltos</option>
-                                <!-- Options will be populated dynamically -->
+                                <option value="">Choose a company...</option>
+                                {% for company in companies %}
+                                <option value="{{ company }}">{{ company }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-building text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="carModel" class="block text-sm font-medium text-gray-700 mb-2">Select Car Model</label>
+                        <div class="relative">
+                            <select id="carModel" name="car_model" required disabled
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-10">
+                                <option value="">Choose a model...</option>
                             </select>
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-car text-gray-400"></i>
@@ -568,24 +574,58 @@
             });
         });
 
-        //alert box script
-        document.getElementById("reviewForm").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent default form submission
+        // Handle car company selection
+        document.getElementById('carCompany').addEventListener('change', function() {
+            const company = this.value;
+            const modelSelect = document.getElementById('carModel');
+            
+            if (company) {
+                // Fetch models for selected company
+                fetch(`/get_models/${company}`)
+                    .then(response => response.json())
+                    .then(models => {
+                        modelSelect.innerHTML = '<option value="">Choose a model...</option>';
+                        models.forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model;
+                            option.textContent = model;
+                            modelSelect.appendChild(option);
+                        });
+                        modelSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching models:', error);
+                        modelSelect.innerHTML = '<option value="">Error loading models</option>';
+                    });
+            } else {
+                modelSelect.innerHTML = '<option value="">Choose a model...</option>';
+                modelSelect.disabled = true;
+            }
+        });
 
-            let formData = new FormData(this); // Get form data
+        // Update form submission to combine company and model
+        document.getElementById("reviewForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const company = document.getElementById('carCompany').value;
+            const model = document.getElementById('carModel').value;
+            const carName = `${company} ${model}`;
+
+            let formData = new FormData(this);
+            formData.set('car', carName); // Set the combined car name
 
             function cleanInput(text) {
                 text = text.trim();
-                return text.replace(/\n/g, " "); // Replace new lines with space
+                return text.replace(/\n/g, " ");
             }
 
             let jsonData = {
-                car: formData.get("car"),
+                car: carName,
                 rating: formData.get("rating"),
                 title: formData.get("title"),
                 content: formData.get("content"),
-                pros: cleanInput(formData.get("pros")),  // Ensure single string
-                cons: cleanInput(formData.get("cons")),  // Ensure single string
+                pros: cleanInput(formData.get("pros")),
+                cons: cleanInput(formData.get("cons")),
                 ownershipDuration: formData.get("ownershipDuration")
             };
 
@@ -593,18 +633,18 @@
                 method: "POST",
                 body: formData
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Review submitted successfully!");
-                        location.reload(); // Optional: Refresh the page after submission
-                    } else {
-                        alert("Error: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    alert("An error occurred: " + error);
-                });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Review submitted successfully!");
+                    location.reload();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("An error occurred: " + error);
+            });
         });
 
     </script>

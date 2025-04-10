@@ -4,14 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarInfoX</title>
+    <title>CarInfoX - Your Ultimate Car Information Platform</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="CarInfoX - Your one-stop destination for car information, reviews, comparisons, and recommendations. Find detailed car specifications, expert reviews, and make informed car buying decisions.">
+    <meta name="keywords" content="car information, car reviews, car comparison, car recommendations, car specifications, car buying guide, automotive reviews, car research, vehicle comparison, car data, car analytics, car market analysis, car price comparison, car features, car specifications, car performance, car safety ratings, car fuel efficiency, car maintenance, car ownership costs, car insurance, car financing, car loan calculator, car depreciation, car resale value, car technology, car infotainment, car connectivity, car safety features, car driver assistance, car comfort features, car interior space, car cargo capacity, car towing capacity, car off-road capability, car electric vehicles, car hybrid vehicles, car luxury vehicles, car sports cars, car SUVs, car sedans, car hatchbacks, car pickup trucks, car minivans, car crossovers, car convertibles, car performance cars, car family vehicles, car budget cars, car premium cars, car new car reviews, car used car reviews, car expert opinions, car user reviews, car ratings, car awards, car industry news, car market trends">
+    <meta name="author" content="CarInfoX">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="CarInfoX - Your Ultimate Car Information Platform">
+    <meta property="og:description" content="Find detailed car information, reviews, comparisons, and recommendations to make informed car buying decisions.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://carinfox.com">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
     <script src="{{ url_for('static',filename='js/script.js')}}" ></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
+    
     <style>
         html {
             scroll-behavior: smooth;
@@ -313,7 +325,6 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">Tesla Model 3</h3>
                         <p class="text-gray-600 mb-4">Electric sedan with impressive range and performance.</p>
-                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
                     </div>
                 </div>
                 <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
@@ -321,7 +332,6 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">Porsche 911</h3>
                         <p class="text-gray-600 mb-4">Iconic sports car with unmatched driving experience.</p>
-                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
                     </div>
                 </div>
                 <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up" data-aos-delay="200">
@@ -329,7 +339,6 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">BMW M4</h3>
                         <p class="text-gray-600 mb-4">High-performance coupe with stunning design.</p>
-                        <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">Learn More →</a>
                     </div>
                 </div>
             </div>

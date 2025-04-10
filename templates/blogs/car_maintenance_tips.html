@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Essential Car Maintenance Tips: Keep Your Vehicle Running Smoothly | CarInfo{% endblock %}
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+</head>
+{% block extra_css %}
+<style>
+    .blog-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .blog-header {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+        max-width: 100%;
+        height: auto;
+        margin: 2rem 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .blog-image:hover {
+        transform: scale(1.02);
+    }
+
+    .section-heading {
+        color: #1e3a8a;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+        border-radius: 2px;
+    }
+
+    .maintenance-tip {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        border-left: 5px solid #3b82f6;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .maintenance-tip:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .tip-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .tip-list li {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .tip-list li:hover {
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateX(5px);
+    }
+
+    .tip-icon {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        margin-right: 1rem;
+        width: 2rem;
+        text-align: center;
+    }
+
+    .tip-schedule {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2.5rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .schedule-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .schedule-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .maintenance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .service-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .related-articles {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 3rem 2rem;
+        margin-top: 4rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .related-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-top: 3px solid transparent;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        border-top-color: #3b82f6;
+    }
+
+    .meta-info {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="blog-content">
+    <div class="blog-header">
+        <h1 class="text-4xl font-bold mb-4">Essential Car Maintenance Tips</h1>
+        <p class="text-xl opacity-90 mb-4">Keep Your Vehicle Running Smoothly and Efficiently</p>
+        <div class="meta-info">
+            <span><i class="far fa-calendar"></i> March 19, 2024</span>
+            <span><i class="far fa-clock"></i> 10 min read</span>
+            <span><i class="far fa-folder"></i> Maintenance Guide</span>
+        </div>
+    </div>
+    
+    <img src="{{ url_for('static', filename='images/blogs/car_maintance_blog.jpeg') }}" alt="Car maintenance" class="blog-image">
+    
+    <section>
+        <p class="lead text-xl text-gray-700 mb-8">Regular maintenance is crucial for keeping your car reliable, safe, and efficient. Follow these essential tips to maintain your vehicle in top condition and extend its lifespan while ensuring optimal performance.</p>
+    </section>
+
+    <div class="maintenance-tip">
+        <h2 class="section-heading">Regular Oil Changes</h2>
+        <ul class="tip-list">
+            <li><i class="fas fa-oil-can tip-icon"></i>Check oil level monthly</li>
+            <li><i class="fas fa-tachometer-alt tip-icon"></i>Change oil every 5,000-7,500 miles</li>
+            <li><i class="fas fa-flask tip-icon"></i>Use manufacturer-recommended oil grade</li>
+            <li><i class="fas fa-filter tip-icon"></i>Replace oil filter with each change</li>
+            <li><i class="fas fa-clipboard-list tip-icon"></i>Keep records of oil changes</li>
+        </ul>
+    </div>
+
+    <div class="maintenance-tip">
+        <h2 class="section-heading">Tire Maintenance</h2>
+        <ul class="tip-list">
+            <li><i class="fas fa-tire tip-icon"></i>Check tire pressure monthly</li>
+            <li><i class="fas fa-sync tip-icon"></i>Rotate tires every 6,000-8,000 miles</li>
+            <li><i class="fas fa-ruler tip-icon"></i>Inspect tread depth regularly</li>
+            <li><i class="fas fa-car-side tip-icon"></i>Check wheel alignment annually</li>
+            <li><i class="fas fa-balance-scale tip-icon"></i>Balance tires when needed</li>
+        </ul>
+    </div>
+
+    <div class="tip-schedule">
+        <h2 class="section-heading">Maintenance Schedule</h2>
+        <div class="maintenance-grid">
+            <div class="schedule-card">
+                <h3 class="font-semibold text-lg mb-4 text-blue-800"><i class="fas fa-calendar-check mr-2"></i>Monthly Checks</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Oil level</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Tire pressure</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Fluid levels</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Lights</li>
+                </ul>
+            </div>
+            <div class="schedule-card">
+                <h3 class="font-semibold text-lg mb-4 text-blue-800"><i class="fas fa-calendar mr-2"></i>Annual Service</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Brake inspection</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Battery test</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Air filter replacement</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Wheel alignment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="maintenance-tip">
+        <h2 class="section-heading">Brake System Care</h2>
+        <ul class="tip-list">
+            <li><i class="fas fa-volume-up tip-icon"></i>Listen for unusual sounds</li>
+            <li><i class="fas fa-tint tip-icon"></i>Check brake fluid level</li>
+            <li><i class="fas fa-tools tip-icon"></i>Inspect brake pads regularly</li>
+            <li><i class="fas fa-wrench tip-icon"></i>Service brakes annually</li>
+            <li><i class="fas fa-exclamation-triangle tip-icon"></i>Replace worn components promptly</li>
+        </ul>
+    </div>
+
+    <div class="maintenance-tip">
+        <h2 class="section-heading">Fluid Maintenance</h2>
+        <ul class="tip-list">
+            <li><i class="fas fa-temperature-high tip-icon"></i>Check coolant level</li>
+            <li><i class="fas fa-brake tip-icon"></i>Monitor brake fluid</li>
+            <li><i class="fas fa-steering-wheel tip-icon"></i>Inspect power steering fluid</li>
+            <li><i class="fas fa-cog tip-icon"></i>Change transmission fluid as recommended</li>
+            <li><i class="fas fa-spray-can tip-icon"></i>Top up windshield washer fluid</li>
+        </ul>
+    </div>
+
+    <section class="mt-8">
+        <h2 class="section-heading">Professional vs. DIY Maintenance</h2>
+        <p class="text-gray-700 mb-6">While some maintenance tasks can be done at home, others require professional expertise:</p>
+        <div class="maintenance-grid">
+            <div class="service-card">
+                <i class="fas fa-tools text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">DIY Tasks</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Check fluid levels</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Replace wiper blades</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Check tire pressure</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Clean and vacuum</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-user-cog text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">Professional Service</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Engine diagnostics</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Brake service</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Transmission work</li>
+                    <li class="flex items-center"><i class="fas fa-check mr-2 text-green-500"></i>Major repairs</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="related-articles">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Explore More Maintenance Guides</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="{{ url_for('car_safety_features') }}" class="related-card">
+                <i class="fas fa-shield-alt text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Car Safety Features</h4>
+                <p class="text-gray-600">Latest safety technologies for your vehicle</p>
+            </a>
+            <a href="{{ url_for('electric_vehicles') }}" class="related-card">
+                <i class="fas fa-charging-station text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Electric Vehicles</h4>
+                <p class="text-gray-600">Special maintenance for EVs</p>
+            </a>
+            <a href="{{ url_for('choosing_right_car') }}" class="related-card">
+                <i class="fas fa-car text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Choosing a Car</h4>
+                <p class="text-gray-600">Find your perfect vehicle match</p>
+            </a>
+        </div>
+    </div>
+</article>
+{% endblock %} 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CarInfoX{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <!-- Common Meta Tags -->
+    <meta name="author" content="CarInfoX">
+    <!-- Common Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-gray-900 text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <a href="{{ url_for('index') }}" class="text-2xl font-bold text-blue-400">CarInfoX</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url_for('comparison') }}" class="hover:text-blue-400">Car Comparison</a>
+                    <a href="{{ url_for('recommendation') }}" class="hover:text-blue-400">Recommendation</a>
+                    <a href="{{ url_for('blogs') }}" class="hover:text-blue-400">Blogs</a>
+                    <a href="{{ url_for('dashboard') }}" class="hover:text-blue-400">Analytics</a>
+                    {% if user %}
+                        <div class="relative group">
+                            <button class="flex items-center hover:text-blue-400">
+                                <span>{{ user.name }}</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block">
+                                <a href="{{ url_for('my_history') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My History</a>
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login_page') }}" class="hover:text-blue-400">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-10 mt-6">
+        <div class="container mx-auto text-center md:text-left px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Brand & Copyright -->
+                <div>
+                    <a href="{{ url_for('index') }}"><h2 class="text-2xl font-bold text-blue-400">CarInfoX</h2></a>
+                    <p class="text-gray-400 mt-2">Your trusted car comparison and analytics platform.</p>
+                    <p class="text-gray-500 mt-4">&copy; 2025 CarInfoX. All rights reserved.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-300">Quick Links</h3>
+                    <ul class="text-gray-400 mt-2 space-y-2">
+                        <li><a href="{{ url_for('about') }}" class="hover:text-blue-400">About Us</a></li>
+                        <li><a href="{{ url_for('latest_cars') }}" class="hover:text-blue-400">Latest Cars</a></li>
+                        <li><a href="{{ url_for('car_review') }}" class="hover:text-blue-400">Car Reviews</a></li>
+                        <li><a href="{{ url_for('about') }}#contact" class="hover:text-blue-400">Contact Us</a></li>
+                        <li><a href="{{ url_for('privacy_policy') }}" class="hover:text-blue-400">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Us -->
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-300">Contact Us</h3>
+                    <p class="text-gray-400 mt-2"><i class="fas fa-envelope text-blue-400"></i> support@carinfox.com</p>
+                    <p class="text-gray-400 mt-2"><i class="fas fa-phone text-blue-400"></i> +91 98700 31347</p>
+                    <p class="text-gray-400 mt-2"><i class="fas fa-map-marker-alt text-blue-400"></i> Jamnagar,Gujarat,India, 361006</p>
+                </div>
+
+                <!-- Blogs -->
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-300">Blogs</h3>
+                    <ul class="text-gray-400 mt-2 space-y-2">
+                        <li><a href="{{ url_for('ai_in_cars') }}" class="hover:text-blue-400">The Future of AI in Cars</a></li>
+                        <li><a href="{{ url_for('electric_vehicles') }}" class="hover:text-blue-400">The Rise of Electric Vehicles</a></li>
+                        <li><a href="{{ url_for('car_safety_features') }}" class="hover:text-blue-400">Advanced Car Safety Features</a></li>
+                        <li><a href="{{ url_for('car_maintenance_tips') }}" class="hover:text-blue-400">Essential Car Maintenance Tips</a></li>
+                        <li><a href="{{ url_for('choosing_right_car') }}" class="hover:text-blue-400">How to Choose the Right Car</a></li>
+                        <li><a href="{{ url_for('blogs') }}" class="hover:text-blue-400">View All Blogs</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 my-6">
+
+            <!-- Social Media -->
+            <div class="text-center">
+                <h3 class="text-xl font-semibold text-blue-300">Follow Us</h3>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="https://www.facebook.com/msdrumit" class="text-gray-400 hover:text-blue-400 text-2xl"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.youtube.com" class="text-gray-400 hover:text-blue-400 text-2xl"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.linkedin.com/in/rumit-vasoya-03b606281/" class="text-gray-400 hover:text-blue-400 text-2xl"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://web.whatsapp.com/" class="text-gray-400 hover:text-blue-400 text-2xl"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/rumitpatel_7660/" class="text-gray-400 hover:text-blue-400 text-2xl"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

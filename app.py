@@ -14,6 +14,7 @@ from pathlib import Path  # Add this import
 import pandas as pd
 import numpy as np
 import joblib
+import pickle
 
 #from config import Config
 app=Flask(__name__)
@@ -77,20 +78,6 @@ google = oauth.register(
     jwks_uri='https://www.googleapis.com/oauth2/v3/certs',  # Manually specify the JWKs URI
     client_kwargs={'scope': 'openid email profile'},
 )
-
-# Load the model
-try:
-    model = joblib.load('static/models/car_price_predict.pkl')
-    print("Model loaded successfully")
-    label_encoders = joblib.load('static/models/label_encoders.pkl')
-    print("Label encoders loaded successfully")
-except Exception as e:
-    print(f"Error loading model or encoders: {str(e)}")
-    print(f"Error type: {type(e)}")
-    import traceback
-    print(f"Traceback: {traceback.format_exc()}")
-    model = None
-    label_encoders = None
 
 # Index API
 @app.route('/')
@@ -416,16 +403,35 @@ def contact():
 @login_required
 def recommendation():
     user = get_current_user()
-    df = pd.read_csv('NewCarData.csv')
+    df = pd.read_csv('NewCarDataPrice.csv')
     brands = sorted(df['Make'].unique().tolist())
     return render_template('recommendation.html', user=user, brands=brands)
+
+# Load the model and label encoders
+try:
+    print("Attempting to load model and encoders...")
+    model = joblib.load('static/models/car_price_predict.pkl')
+    label_encoders = joblib.load('static/models/label_encoders.pkl')
+    print("Model and encoders loaded successfully")
+    print("Model type:", type(model))
+    print("Label encoders:", label_encoders.keys() if label_encoders else None)
+except Exception as e:
+    print("Error loading model or encoders:", str(e))
+    model = None
+    label_encoders = None
 
 @app.route('/predict_price', methods=['POST'])
 @login_required
 def predict_price():
     try:
+        print("Predict price route called")
+        print("Session:", session)
+        print("User ID:", session.get('user_id'))
+        
         if model is None or label_encoders is None:
+            print("Model or encoders not loaded")
             return jsonify({'error': 'Model or encoders not loaded. Please try again later.'}), 500
+            
         # Get data from form
         data = request.get_json()
         print("Received data:", data)
@@ -479,6 +485,152 @@ def predict_price():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/get_recommendation', methods=['POST'])
+def get_recommendation():
+    try:
+        data = request.get_json()
+        print("Received data:", data)  # Debug log
+        
+        # Validate required fields
+        required_fields = ['fuel_type', 'transmission', 'min_price', 'max_price', 'mileage', 'engine']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Load the trained model and data
+        model_path = os.path.join('static', 'models', 'car_recommend_model.pkl')
+        lef_path = os.path.join('static', 'models', 'label_encoder_lef.pkl')  # Fuel type encoder
+        let_path = os.path.join('static', 'models', 'label_encoder_let.pkl')  # Transmission encoder
+        
+        try:
+            # Load the SVR model
+            model = joblib.load(model_path)
+            print("Model loaded successfully")
+            
+            # Load the car data
+            df = pd.read_csv('New_Car_Recommendation.csv')
+            print("Data loaded successfully")
+            
+            # Load the encoders
+            lef = joblib.load(lef_path)  # Fuel type encoder
+            let = joblib.load(let_path)  # Transmission encoder
+            print("Encoders loaded successfully")
+            
+        except Exception as e:
+            print(f"Error loading model or data: {str(e)}")
+            return jsonify({'error': 'Error loading recommendation model or data'}), 500
+        
+        # Prepare input data with validation
+        try:
+            # Convert and validate numeric inputs
+            min_price = float(data['min_price'])
+            max_price = float(data['max_price'])
+            mileage = float(data['mileage'])
+            engine = float(data['engine'])
+            
+            # Validate ranges
+            if min_price >= max_price:
+                return jsonify({'error': 'Minimum price must be less than maximum price'}), 400
+            if mileage <= 0 or engine <= 0:
+                return jsonify({'error': 'Mileage and engine capacity must be positive numbers'}), 400
+            
+            # Encode categorical features
+            fuel_type_encoded = lef.transform([data['fuel_type']])[0]
+            transmission_encoded = let.transform([data['transmission']])[0]
+            
+            # Create input DataFrame with features in the exact order used during training
+            input_data = pd.DataFrame({
+                'Fuel Type': [fuel_type_encoded],
+                'Transmission': [transmission_encoded],
+                'Engine': [engine],
+                'Mileage': [mileage],
+                'Price': [(min_price + max_price) / 2]
+            }, columns=['Fuel Type', 'Transmission', 'Engine', 'Mileage', 'Price'])
+            
+            print("Input data prepared:", input_data)  # Debug log
+            
+            # Get predictions
+            predictions = model.predict(input_data)
+            print("Model predictions:", predictions)  # Debug log
+            
+            # Filter data based on user criteria
+            filtered_data = df[
+                (df['Fuel Type'] == data['fuel_type']) &
+                (df['Transmission'] == data['transmission']) &
+                (df['Price'].between(min_price, max_price))
+            ].copy()
+            
+            if len(filtered_data) == 0:
+                return jsonify({'error': 'No cars match your criteria. Please adjust your ranges.'}), 404
+            
+            # Calculate distances using numeric features
+            filtered_data['Distance'] = np.sqrt(
+                ((filtered_data['Price'] - predictions[0]) / predictions[0])**2 +
+                ((filtered_data['Mileage'] - mileage) / mileage)**2 +
+                ((filtered_data['Engine'] - engine) / engine)**2
+            )
+            
+            # Create unique identifier for each car
+            filtered_data['Brand_Car'] = filtered_data['Brand'] + "_" + filtered_data['Car']
+            
+            # Get top 5 unique recommendations
+            recommendations = filtered_data.sort_values('Distance').drop_duplicates('Brand_Car').head(5)
+            
+            # Helper function to extract numeric value from string
+            def extract_numeric_value(value):
+                if pd.isna(value):
+                    return 0.0
+                if isinstance(value, (int, float)):
+                    return float(value)
+                # Extract first number from string
+                import re
+                match = re.search(r'(\d+(?:\.\d+)?)', str(value))
+                return float(match.group(1)) if match else 0.0
+            
+            # Helper function to check if feature is present
+            def check_feature_present(value):
+                if pd.isna(value):
+                    return 'No'
+                value = str(value).lower()
+                return any(keyword in value for keyword in ['yes', 'present', 'available', 'true', '1'])
+            
+            # Format recommendations with all details
+            formatted_recommendations = []
+            for _, row in recommendations.iterrows():
+                formatted_recommendations.append({
+                    'brand': row['Brand'],
+                    'car': row['Car'],
+                    'price': float(row['Price']),
+                    'mileage': float(row['Mileage']),
+                    'engine': float(row['Engine']),
+                    'fuel_type': row['Fuel Type'],
+                    'transmission': row['Transmission'],
+                    'airbags': extract_numeric_value(row['Airbags']),
+                    'parking_assist': row['Parking Assist'],
+                    'button_start': check_feature_present(row['Keyless Start/ Button Start']),
+                    'sunroof': check_feature_present(row['Sunroof / Moonroof']),
+                    'headlights': row['Headlights'],
+                    'gps': check_feature_present(row['GPS Navigation System']),
+                    'tripmeter': check_feature_present(row['Trip Meter']),
+                    'battery_warranty': extract_numeric_value(row['Battery Warranty (In Years)'])
+                })
+            
+            return jsonify({
+                'recommendations': formatted_recommendations,
+                'count': len(formatted_recommendations)
+            })
+            
+        except ValueError as e:
+            print(f"Value error in data processing: {str(e)}")
+            return jsonify({'error': 'Invalid input values. Please check your inputs.'}), 400
+        except Exception as e:
+            print(f"Error in data processing: {str(e)}")
+            return jsonify({'error': 'Error processing recommendation data'}), 500
+            
+    except Exception as e:
+        print(f"Unexpected error in get_recommendation: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 # Document validation helper functions
 def allowed_file(filename):
@@ -911,9 +1063,22 @@ def latest_cars():
 @login_required
 def car_review():
     user = get_current_user()
-    return render_template('car_review.html', user=user)
+    # Get distinct car companies from the database
+    companies = car_data.distinct('car_company')
+    return render_template('car_review.html', user=user, companies=companies)
 
-@app.route('/submit_review',methods=['POST'])
+@app.route('/get_models/<company>')
+@login_required
+def get_models(company):
+    try:
+        # Get distinct models for the selected company
+        models = car_data.distinct('car_model', {'car_company': company})
+        return jsonify(models)
+    except Exception as e:
+        print(f"Error fetching models: {e}")
+        return jsonify([]), 500
+
+@app.route('/submit_review', methods=['POST'])
 @login_required
 def submit_review():
     try:
@@ -921,8 +1086,18 @@ def submit_review():
         data = request.get_json() if request.is_json else request.form.to_dict()
         if not data:
             return jsonify({"success": False, "message": "No data received!"}), 400
+
+        # Get car company and model
+        car_company = data.get("car_company")
+        car_model = data.get("car_model")
+        if not car_company or not car_model:
+            return jsonify({"success": False, "message": "Car company and model are required!"}), 400
+
+        # Combine company and model for the car name
+        car_name = f"{car_company} {car_model}"
+
         review_details = {
-            "car": data.get("car"),
+            "car": car_name,
             "rating": data.get("rating"),
             "title": data.get("title"),
             "content": data.get("content"),
@@ -940,7 +1115,7 @@ def submit_review():
         review.insert_one(review_details)
         return jsonify({"success": True, "message": "Review submitted successfully!"})
     except Exception as e:
-        return jsonify({"success":False, "message": str(e)})
+        return jsonify({"success": False, "message": str(e)})
 
 # My history API
 @app.route('/my_history')
@@ -1122,5 +1297,85 @@ def privacy_policy():
     user = get_current_user()
     return render_template('privacy_policy.html', user=user)
 
+@app.route('/check_session')
+def check_session():
+    return jsonify({'logged_in': 'user_id' in session})
+
+@app.route('/get_variants/<company>/<model>')
+def get_variants(company, model):
+    try:
+        # Get unique variants for the selected company and model
+        variants = car_data.distinct('car_new_name', {
+            'car_company': company,
+            'car_model': model
+        })
+        return jsonify(sorted(variants))
+    except Exception as e:
+        print(f"Error fetching variants: {e}")
+        return jsonify([]), 500
+
+@app.route('/delete_history', methods=['POST'])
+@login_required
+def delete_history():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data received"}), 400
+            
+        user = get_current_user()
+        if not user:
+            return jsonify({"error": "User not found"}), 401
+            
+        # Delete comparisons if specified
+        if data.get('type') == 'comparison' and data.get('id'):
+            result = comp.delete_one({
+                '_id': ObjectId(data['id']),
+                'user_id': str(user['_id'])
+            })
+            if result.deleted_count == 0:
+                return jsonify({"error": "Comparison not found or not authorized"}), 404
+            return jsonify({"message": "Comparison deleted successfully"})
+            
+        # Delete reviews if specified
+        elif data.get('type') == 'review' and data.get('id'):
+            result = review.delete_one({
+                '_id': ObjectId(data['id']),
+                'email': user['email']
+            })
+            if result.deleted_count == 0:
+                return jsonify({"error": "Review not found or not authorized"}), 404
+            return jsonify({"message": "Review deleted successfully"})
+            
+        return jsonify({"error": "Invalid request type or missing ID"}), 400
+        
+    except Exception as e:
+        print(f"Error deleting history: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Blog Routes
+@app.route('/blogs')
+def blogs():
+    return render_template('blogs.html')
+
+@app.route('/blogs/ai-in-cars')
+def ai_in_cars():
+    return render_template('blogs/ai_in_cars.html')
+
+@app.route('/blogs/electric-vehicles')
+def electric_vehicles():
+    return render_template('blogs/electric_vehicles.html')
+
+@app.route('/blogs/car-safety-features')
+def car_safety_features():
+    return render_template('blogs/car_safety_features.html')
+
+@app.route('/blogs/car-maintenance-tips')
+def car_maintenance_tips():
+    return render_template('blogs/car_maintenance_tips.html')
+
+@app.route('/blogs/choosing-right-car')
+def choosing_right_car():
+    return render_template('blogs/choosing_right_car.html')
+
 if __name__=='__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)) ,debug=True)

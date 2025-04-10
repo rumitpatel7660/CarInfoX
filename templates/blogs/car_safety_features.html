@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Car Safety Features: Protecting You on the Road | CarInfo{% endblock %}
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+</head>
+{% block extra_css %}
+<style>
+    .blog-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .blog-header {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+        max-width: 100%;
+        height: auto;
+        margin: 2rem 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .blog-image:hover {
+        transform: scale(1.02);
+    }
+
+    .section-heading {
+        color: #1e3a8a;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+        border-radius: 2px;
+    }
+
+    .feature-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        border-left: 5px solid #3b82f6;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-list li {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .feature-list li:hover {
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateX(5px);
+    }
+
+    .feature-icon {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        margin-right: 1rem;
+        width: 2rem;
+        text-align: center;
+    }
+
+    .future-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-top: 3px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+
+    .future-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .related-articles {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 3rem 2rem;
+        margin-top: 4rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .related-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-top: 3px solid transparent;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        border-top-color: #3b82f6;
+    }
+
+    .meta-info {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="blog-content">
+    <div class="blog-header">
+        <h1 class="text-4xl font-bold mb-4">Advanced Car Safety Features</h1>
+        <p class="text-xl opacity-90 mb-4">Protecting You on the Road with Modern Technology</p>
+        <div class="meta-info">
+            <span><i class="far fa-calendar"></i> March 19, 2024</span>
+            <span><i class="far fa-clock"></i> 8 min read</span>
+            <span><i class="far fa-folder"></i> Car Safety</span>
+        </div>
+    </div>
+    
+    <img src="{{ url_for('static', filename='images/blogs/car_safety_blog.jpeg') }}" alt="Modern car safety features" class="blog-image">
+    
+    <section>
+        <p class="lead text-xl text-gray-700 mb-8">Modern vehicles come equipped with sophisticated safety technologies that help prevent accidents and protect occupants. Discover how these advanced features are revolutionizing road safety and providing peace of mind for drivers and passengers alike.</p>
+    </section>
+
+    <div class="feature-box">
+        <h2 class="section-heading">Advanced Driver Assistance Systems (ADAS)</h2>
+        <ul class="feature-list">
+            <li><i class="fas fa-car-crash feature-icon"></i>Forward Collision Warning and Automatic Emergency Braking</li>
+            <li><i class="fas fa-road feature-icon"></i>Lane Departure Warning and Lane Keeping Assist</li>
+            <li><i class="fas fa-eye feature-icon"></i>Blind Spot Monitoring</li>
+            <li><i class="fas fa-tachometer-alt feature-icon"></i>Adaptive Cruise Control</li>
+            <li><i class="fas fa-car-side feature-icon"></i>Rear Cross-Traffic Alert</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h2 class="section-heading">Passive Safety Features</h2>
+        <ul class="feature-list">
+            <li><i class="fas fa-shield-alt feature-icon"></i>Advanced Airbag Systems</li>
+            <li><i class="fas fa-car feature-icon"></i>Reinforced Safety Cage</li>
+            <li><i class="fas fa-compress-arrows-alt feature-icon"></i>Crumple Zones</li>
+            <li><i class="fas fa-head-side feature-icon"></i>Anti-Whiplash Head Restraints</li>
+            <li><i class="fas fa-life-ring feature-icon"></i>Safety Belt Pre-tensioners</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h2 class="section-heading">Visibility and Lighting</h2>
+        <ul class="feature-list">
+            <li><i class="fas fa-lightbulb feature-icon"></i>Adaptive Headlights</li>
+            <li><i class="fas fa-sun feature-icon"></i>High Beam Assist</li>
+            <li><i class="fas fa-video feature-icon"></i>360-Degree Camera Systems</li>
+            <li><i class="fas fa-moon feature-icon"></i>Night Vision Assistance</li>
+            <li><i class="fas fa-cloud-rain feature-icon"></i>Rain-Sensing Wipers</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h2 class="section-heading">Emergency Response Features</h2>
+        <ul class="feature-list">
+            <li><i class="fas fa-exclamation-triangle feature-icon"></i>Automatic Crash Notification</li>
+            <li><i class="fas fa-phone-alt feature-icon"></i>Emergency SOS Call</li>
+            <li><i class="fas fa-brake-warning feature-icon"></i>Post-Collision Braking</li>
+            <li><i class="fas fa-traffic-light feature-icon"></i>Emergency Stop Signal</li>
+        </ul>
+    </div>
+
+    <section class="mt-8">
+        <h2 class="section-heading">The Future of Car Safety</h2>
+        <p class="text-gray-700 mb-6">As technology continues to advance, we can expect even more sophisticated safety features:</p>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="future-card">
+                <i class="fas fa-brain text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">AI-Powered Systems</h3>
+                <p class="text-gray-600">Predictive safety systems using artificial intelligence to anticipate and prevent accidents</p>
+            </div>
+            <div class="future-card">
+                <i class="fas fa-network-wired text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">V2V Communication</h3>
+                <p class="text-gray-600">Vehicle-to-vehicle communication for enhanced road awareness</p>
+            </div>
+            <div class="future-card">
+                <i class="fas fa-walking text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">Pedestrian Protection</h3>
+                <p class="text-gray-600">Enhanced detection systems for pedestrian and cyclist safety</p>
+            </div>
+            <div class="future-card">
+                <i class="fas fa-vr-cardboard text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-3">AR Displays</h3>
+                <p class="text-gray-600">Augmented reality displays for improved driver awareness</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="related-articles">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Explore More Safety Guides</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="{{ url_for('ai_in_cars') }}" class="related-card">
+                <i class="fas fa-robot text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">AI in Modern Cars</h4>
+                <p class="text-gray-600">Smart features revolutionizing driving</p>
+            </a>
+            <a href="{{ url_for('electric_vehicles') }}" class="related-card">
+                <i class="fas fa-charging-station text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Electric Vehicles</h4>
+                <p class="text-gray-600">The future of sustainable driving</p>
+            </a>
+            <a href="{{ url_for('car_maintenance_tips') }}" class="related-card">
+                <i class="fas fa-tools text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Maintenance Tips</h4>
+                <p class="text-gray-600">Keep your car in perfect condition</p>
+            </a>
+        </div>
+    </div>
+</article>
+{% endblock %} 

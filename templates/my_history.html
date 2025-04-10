@@ -4,7 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My History - CarInfoX</title>
+    <title>My Car History - Track Your Car Research | CarInfoX</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="View your car research history, saved comparisons, and previous recommendations. Keep track of your car search journey and easily access previously viewed vehicles.">
+    <meta name="keywords" content="car history, car search history, saved cars, car comparisons history, vehicle research tracking, automotive history, car browsing history, car search records, car comparison history, car research timeline, car viewing history, car favorites list, car saved searches, car research progress, car search journey, car comparison tracking, car research analytics, car search patterns, car browsing patterns, car research insights, car search preferences, car comparison preferences, car research milestones, car search achievements, car comparison achievements, car research statistics, car search statistics, car comparison statistics, car research trends, car search trends, car comparison trends, car research analytics, car search analytics, car comparison analytics, car research dashboard, car search dashboard, car comparison dashboard, car research profile, car search profile, car comparison profile, car research account, car search account, car comparison account, car research data, car search data, car comparison data, car research records, car search records, car comparison records, car research tracking, car search tracking, car comparison tracking, car research monitoring, car search monitoring, car comparison monitoring, car research management, car search management, car comparison management">
+    <meta name="author" content="CarInfoX">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="My Car History - Track Your Car Research | CarInfoX">
+    <meta property="og:description" content="Access your complete car research history and track your vehicle search journey with CarInfoX.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://carinfox.com/my-history">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
@@ -320,7 +331,7 @@
             </div>
             <div class="space-y-6">
                 {% for review in reviews %}
-                <div class="activity-card p-6 review-card" data-review-id="{{ review.id }}">
+                <div class="activity-card p-6 review-card" data-review-id="{{ review._id }}">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <h3 class="text-lg font-semibold">{{ review.car_name }}</h3>
@@ -354,8 +365,7 @@
                     </div>
 
                     <div class="mt-4 flex justify-end">
-                        <button class="text-blue-500 hover:text-blue-600 mr-4">Edit</button>
-                        <button class="text-red-500 hover:text-red-600">Delete</button>
+                        <button class="text-red-500 hover:text-red-600 delete-review-btn" data-review-id="{{ review._id }}">Delete</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -497,25 +507,55 @@
                     const deleteBtn = card.querySelector('button:last-child');
                     if (deleteBtn) {
                         deleteBtn.addEventListener('click', function () {
-                            if (confirm('Are you sure you want to delete this comparison?')) {
-                                const comparisonId = card.dataset.comparisonId;
-                                fetch(`/delete_comparison/${comparisonId}`, {
-                                    method: 'DELETE'
-                                })
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, delete it!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const comparisonId = card.dataset.comparisonId;
+                                    fetch('/delete_history', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            type: 'comparison',
+                                            id: comparisonId
+                                        })
+                                    })
                                     .then(response => response.json())
                                     .then(data => {
-                                        if (data.success) {
-                                            card.remove();
-                                            alert('Comparison deleted successfully!');
+                                        if (data.message) {
+                                            Swal.fire(
+                                                'Deleted!',
+                                                'Your comparison has been deleted.',
+                                                'success'
+                                            ).then(() => {
+                                                card.remove();
+                                            });
                                         } else {
-                                            alert('Failed to delete comparison: ' + data.message);
+                                            Swal.fire(
+                                                'Error!',
+                                                data.error || 'Failed to delete comparison',
+                                                'error'
+                                            );
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error:', error);
-                                        alert('An error occurred while deleting comparison');
+                                        Swal.fire(
+                                            'Error!',
+                                            'An error occurred while deleting the comparison',
+                                            'error'
+                                        );
                                     });
-                            }
+                                }
+                            });
                         });
                     }
                 });
@@ -523,28 +563,58 @@
                 // Handle review delete buttons
                 const reviewCards = document.querySelectorAll('.review-card');
                 reviewCards.forEach(card => {
-                    const deleteBtn = card.querySelector('button:last-child');
+                    const deleteBtn = card.querySelector('.delete-review-btn');
                     if (deleteBtn) {
                         deleteBtn.addEventListener('click', function () {
-                            if (confirm('Are you sure you want to delete this review?')) {
-                                const reviewId = card.dataset.reviewId;
-                                fetch(`/delete_review/${reviewId}`, {
-                                    method: 'DELETE'
-                                })
+                            const reviewId = deleteBtn.getAttribute('data-review-id');
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, delete it!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetch('/delete_history', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            type: 'review',
+                                            id: reviewId
+                                        })
+                                    })
                                     .then(response => response.json())
                                     .then(data => {
-                                        if (data.success) {
-                                            card.remove();
-                                            alert('Review deleted successfully!');
+                                        if (data.message) {
+                                            Swal.fire(
+                                                'Deleted!',
+                                                'Your review has been deleted.',
+                                                'success'
+                                            ).then(() => {
+                                                card.remove();
+                                            });
                                         } else {
-                                            alert('Failed to delete review: ' + data.message);
+                                            Swal.fire(
+                                                'Error!',
+                                                data.error || 'Failed to delete review',
+                                                'error'
+                                            );
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error:', error);
-                                        alert('An error occurred while deleting review');
+                                        Swal.fire(
+                                            'Error!',
+                                            'An error occurred while deleting the review',
+                                            'error'
+                                        );
                                     });
-                            }
+                                }
+                            });
                         });
                     }
                 });

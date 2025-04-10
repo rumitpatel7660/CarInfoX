@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}How to Choose the Right Car: A Complete Guide | CarInfo{% endblock %}
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+</head>
+{% block extra_css %}
+<style>
+    .blog-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .blog-header {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+        max-width: 100%;
+        height: auto;
+        margin: 2rem 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .blog-image:hover {
+        transform: scale(1.02);
+    }
+
+    .section-heading {
+        color: #1e3a8a;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+        border-radius: 2px;
+    }
+
+    .guide-section {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #3b82f6;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .guide-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .checklist {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2.5rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .cost-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .cost-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .feature-list li {
+        padding: 0.75rem 1rem;
+        margin: 0.5rem 0;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-list li:hover {
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateX(5px);
+    }
+
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .comparison-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+
+    .comparison-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .related-articles {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 3rem 2rem;
+        margin-top: 4rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .related-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-top: 3px solid transparent;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        border-top-color: #3b82f6;
+    }
+
+    .meta-info {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="blog-content">
+    <div class="blog-header">
+        <h1 class="text-4xl font-bold mb-4">How to Choose the Right Car</h1>
+        <p class="text-xl opacity-90 mb-4">A Complete Guide to Making the Perfect Choice</p>
+        <div class="meta-info">
+            <span><i class="far fa-calendar"></i> March 19, 2025</span>
+            <span><i class="far fa-clock"></i> 10 min read</span>
+            <span><i class="far fa-folder"></i> Car Buying Guide</span>
+        </div>
+    </div>
+    
+    <img src="{{ url_for('static', filename='images/blogs/choose_car_BLOG.jpg') }}" alt="Choosing the right car" class="blog-image">
+    
+    <section>
+        <p class="lead text-xl text-gray-700 mb-8">Choosing the right car is a significant decision that requires careful consideration of various factors. This comprehensive guide will help you navigate through the car-buying process and make an informed choice that perfectly matches your needs and lifestyle.</p>
+    </section>
+
+    <div class="guide-section">
+        <h2 class="section-heading">Assess Your Needs</h2>
+        <ul class="feature-list space-y-2">
+            <li class="flex items-center"><i class="fas fa-route mr-3 text-blue-600"></i>Daily commute distance and driving patterns</li>
+            <li class="flex items-center"><i class="fas fa-users mr-3 text-blue-600"></i>Number of regular passengers and family size</li>
+            <li class="flex items-center"><i class="fas fa-box mr-3 text-blue-600"></i>Cargo space and storage requirements</li>
+            <li class="flex items-center"><i class="fas fa-parking mr-3 text-blue-600"></i>Parking situation and garage space</li>
+            <li class="flex items-center"><i class="fas fa-cloud-sun mr-3 text-blue-600"></i>Local weather conditions and terrain</li>
+        </ul>
+    </div>
+
+    <div class="checklist">
+        <h2 class="section-heading">Budget Considerations</h2>
+        <div class="comparison-grid">
+            <div class="cost-card">
+                <h3 class="font-semibold text-lg mb-4 text-blue-800"><i class="fas fa-money-bill-wave mr-2"></i>Purchase Costs</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Down payment</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Monthly payments</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Insurance rates</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Registration fees</li>
+                </ul>
+            </div>
+            <div class="cost-card">
+                <h3 class="font-semibold text-lg mb-4 text-blue-800"><i class="fas fa-coins mr-2"></i>Operating Costs</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Fuel efficiency</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Maintenance costs</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Repair expenses</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-500"></i>Resale value</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 class="section-heading">Vehicle Types</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="comparison-card">
+                <h3 class="font-semibold mb-3"><i class="fas fa-car text-blue-600 mr-2"></i>Sedan & Hatchback</h3>
+                <ul class="space-y-2">
+                    <li>Perfect for daily commuting</li>
+                    <li>Excellent fuel efficiency</li>
+                    <li>Easy to park and maneuver</li>
+                    <li>Ideal for small families</li>
+                </ul>
+            </div>
+            <div class="comparison-card">
+                <h3 class="font-semibold mb-3"><i class="fas fa-truck text-blue-600 mr-2"></i>SUV & Crossover</h3>
+                <ul class="space-y-2">
+                    <li>Spacious interior</li>
+                    <li>Higher ground clearance</li>
+                    <li>Better visibility</li>
+                    <li>Ideal for families</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 class="section-heading">Safety Features</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="feature-list">
+                <h3 class="font-semibold mb-3 text-blue-800">Active Safety</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-shield-alt mr-2 text-blue-600"></i>Advanced driver assistance</li>
+                    <li class="flex items-center"><i class="fas fa-car-crash mr-2 text-blue-600"></i>Collision prevention</li>
+                    <li class="flex items-center"><i class="fas fa-eye mr-2 text-blue-600"></i>Lane departure warning</li>
+                </ul>
+            </div>
+            <div class="feature-list">
+                <h3 class="font-semibold mb-3 text-blue-800">Passive Safety</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-car mr-2 text-blue-600"></i>Airbag systems</li>
+                    <li class="flex items-center"><i class="fas fa-cog mr-2 text-blue-600"></i>Structural integrity</li>
+                    <li class="flex items-center"><i class="fas fa-star mr-2 text-blue-600"></i>Crash test ratings</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <h2 class="section-heading">Test Drive Tips</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="comparison-card">
+                <i class="fas fa-road text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-2">Road Test</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>Various road conditions</li>
+                    <li>Highway performance</li>
+                    <li>City maneuverability</li>
+                </ul>
+            </div>
+            <div class="comparison-card">
+                <i class="fas fa-cogs text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-2">Features Check</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>All controls and systems</li>
+                    <li>Comfort features</li>
+                    <li>Technology integration</li>
+                </ul>
+            </div>
+            <div class="comparison-card">
+                <i class="fas fa-clipboard-check text-3xl text-blue-600 mb-4"></i>
+                <h3 class="font-semibold mb-2">Comfort Assessment</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>Seating position</li>
+                    <li>Visibility check</li>
+                    <li>Noise levels</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-articles">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Explore More Car Guides</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="{{ url_for('electric_vehicles') }}" class="related-card">
+                <i class="fas fa-charging-station text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Electric Vehicles</h4>
+                <p class="text-gray-600">Discover the future of sustainable driving</p>
+            </a>
+            <a href="{{ url_for('car_safety_features') }}" class="related-card">
+                <i class="fas fa-shield-alt text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Safety Features</h4>
+                <p class="text-gray-600">Latest in automotive safety technology</p>
+            </a>
+            <a href="{{ url_for('car_maintenance_tips') }}" class="related-card">
+                <i class="fas fa-tools text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Maintenance Tips</h4>
+                <p class="text-gray-600">Essential car care guidelines</p>
+            </a>
+        </div>
+    </div>
+</article>
+{% endblock %} 

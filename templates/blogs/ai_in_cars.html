@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% include "blogs/blog_styles.html" %}
+
+{% block extra_css %}
+<style>
+    .blog-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .blog-header {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        margin: 2rem 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .blog-image-container:hover .blog-image {
+        transform: scale(1.05);
+    }
+
+    .lead-text {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        color: #4a5568;
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+        border-radius: 12px;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .section-heading {
+        color: #1e3a8a;
+        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+        border-radius: 2px;
+    }
+
+    .content-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+
+    .content-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .highlight-box {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2.5rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .list-content {
+        list-style: none;
+        padding: 0;
+    }
+
+    .list-content li {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .list-content li:hover {
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateX(5px);
+    }
+
+    .list-content li::before {
+        content: '\f7c0';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 1rem;
+        color: #3b82f6;
+        font-size: 1.2rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .related-articles {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 3rem 2rem;
+        margin-top: 4rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .related-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-top: 3px solid transparent;
+        text-decoration: none;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        border-top-color: #3b82f6;
+    }
+
+    .meta-info {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ai-feature-icon {
+        font-size: 2rem;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block title %}The Future of AI in Cars: Revolutionizing the Automotive Industry | CarInfo{% endblock %}
+
+{% block content %}
+<article class="blog-content">
+    <div class="blog-header">
+        <h1 class="text-4xl font-bold mb-4">The Future of AI in Cars</h1>
+        <p class="text-xl opacity-90 mb-4">Revolutionizing the Automotive Industry</p>
+        <div class="meta-info">
+            <span><i class="far fa-calendar"></i> March 19, 2024</span>
+            <span><i class="far fa-clock"></i> 8 min read</span>
+            <span><i class="far fa-folder"></i> Technology</span>
+        </div>
+    </div>
+    
+    <div class="blog-image-container">
+        <img src="{{ url_for('static', filename='images/blogs/AI_car_blog.jpeg') }}" alt="AI-powered car interface" class="blog-image">
+    </div>
+    
+    <p class="lead-text">Artificial Intelligence is transforming the automotive industry, bringing unprecedented levels of safety, convenience, and automation to modern vehicles. Discover how AI is shaping the future of driving and revolutionizing our daily commute.</p>
+
+    <div class="content-box">
+        <h2 class="section-heading">Advanced Driver Assistance Systems (ADAS)</h2>
+        <ul class="list-content">
+            <li><i class="fas fa-car-crash mr-3 text-blue-600"></i>Adaptive Cruise Control with AI-powered distance management</li>
+            <li><i class="fas fa-road mr-3 text-blue-600"></i>Lane Keeping Assist with predictive steering</li>
+            <li><i class="fas fa-parking mr-3 text-blue-600"></i>Intelligent Parking Assistance</li>
+            <li><i class="fas fa-brake-warning mr-3 text-blue-600"></i>Advanced Emergency Braking</li>
+            <li><i class="fas fa-traffic-light mr-3 text-blue-600"></i>Traffic Sign Recognition</li>
+        </ul>
+    </div>
+
+    <div class="highlight-box">
+        <h2 class="section-heading">AI-Powered Safety Features</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt ai-feature-icon"></i>
+                <h3 class="font-semibold mb-3">Collision Prevention</h3>
+                <ul class="list-content">
+                    <li><i class="fas fa-car mr-3 text-blue-600"></i>Predictive collision detection</li>
+                    <li><i class="fas fa-eye mr-3 text-blue-600"></i>360-degree environment monitoring</li>
+                    <li><i class="fas fa-walking mr-3 text-blue-600"></i>Pedestrian recognition</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-user-shield ai-feature-icon"></i>
+                <h3 class="font-semibold mb-3">Driver Monitoring</h3>
+                <ul class="list-content">
+                    <li><i class="fas fa-bed mr-3 text-blue-600"></i>Fatigue detection</li>
+                    <li><i class="fas fa-brain mr-3 text-blue-600"></i>Attention monitoring</li>
+                    <li><i class="fas fa-chart-line mr-3 text-blue-600"></i>Behavioral analysis</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2 class="section-heading">Autonomous Driving Capabilities</h2>
+        <ul class="list-content">
+            <li><i class="fas fa-robot mr-3 text-blue-600"></i>Level 2+ autonomous driving features</li>
+            <li><i class="fas fa-route mr-3 text-blue-600"></i>AI-powered route optimization</li>
+            <li><i class="fas fa-traffic-light mr-3 text-blue-600"></i>Real-time traffic analysis</li>
+            <li><i class="fas fa-map-marked-alt mr-3 text-blue-600"></i>Smart navigation systems</li>
+        </ul>
+    </div>
+
+    <div class="content-box">
+        <h2 class="section-heading">Future Developments</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="feature-card">
+                <i class="fas fa-rocket ai-feature-icon"></i>
+                <h3 class="font-semibold mb-3">Coming Soon</h3>
+                <ul class="list-content">
+                    <li><i class="fas fa-car-side mr-3 text-blue-600"></i>Full self-driving capabilities</li>
+                    <li><i class="fas fa-microphone mr-3 text-blue-600"></i>AI-powered voice assistants</li>
+                    <li><i class="fas fa-tools mr-3 text-blue-600"></i>Predictive maintenance</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-flask ai-feature-icon"></i>
+                <h3 class="font-semibold mb-3">Research Areas</h3>
+                <ul class="list-content">
+                    <li><i class="fas fa-brain mr-3 text-blue-600"></i>Enhanced machine learning</li>
+                    <li><i class="fas fa-network-wired mr-3 text-blue-600"></i>Advanced sensor fusion</li>
+                    <li><i class="fas fa-cogs mr-3 text-blue-600"></i>Improved decision making</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-articles">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Explore More Tech Insights</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="{{ url_for('electric_vehicles') }}" class="related-card">
+                <i class="fas fa-charging-station text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Electric Vehicles</h4>
+                <p class="text-gray-600">The future of sustainable transportation</p>
+            </a>
+            <a href="{{ url_for('car_safety_features') }}" class="related-card">
+                <i class="fas fa-shield-alt text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Safety Features</h4>
+                <p class="text-gray-600">Modern car safety technologies</p>
+            </a>
+            <a href="{{ url_for('car_maintenance_tips') }}" class="related-card">
+                <i class="fas fa-tools text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-medium text-lg mb-2">Maintenance Tips</h4>
+                <p class="text-gray-600">Keep your smart car running smoothly</p>
+            </a>
+        </div>
+    </div>
+</article>
+{% endblock %} 

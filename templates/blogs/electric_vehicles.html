@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% include "blogs/blog_styles.html" %}
+
+{% block extra_css %}
+<style>
+    .ev-header {
+        background: linear-gradient(to right, #1e40af, #3b82f6);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        border-radius: 12px;
+        color: white;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .info-box {
+        background: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    
+    .highlight-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2563eb;
+        margin-bottom: 0.5rem;
+    }
+    
+    .charging-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #3b82f6;
+        transition: transform 0.3s ease;
+    }
+    
+    .charging-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .benefit-list li {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        background: #f8fafc;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .benefit-list li:hover {
+        background: #eef2ff;
+        transform: translateX(5px);
+    }
+    
+    .eco-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .eco-stat-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: #f0fdf4;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+    
+    .eco-stat-card:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block title %}The Rise of Electric Vehicles: Driving Towards a Sustainable Future | CarInfo{% endblock %}
+
+{% block content %}
+<article class="blog-content">
+    <div class="ev-header text-center px-4">
+        <h1 class="text-4xl font-bold mb-4">The Rise of Electric Vehicles</h1>
+        <p class="text-xl opacity-90">Driving Towards a Sustainable Future</p>
+        <div class="meta-info justify-center mt-4 text-white">
+            <span><i class="far fa-calendar"></i> March 19, 2025</span>
+            <span><i class="far fa-clock"></i> 7 min read</span>
+            <span><i class="far fa-folder"></i> Sustainability</span>
+        </div>
+    </div>
+    
+    <img src="{{ url_for('static', filename='images/blogs/electric_vehical_blog.jpeg') }}" alt="Modern electric vehicle charging" class="blog-image">
+    
+    <p class="lead-text">Electric vehicles are revolutionizing the automotive industry, offering a cleaner, more sustainable alternative to traditional combustion engines. Discover how EVs are shaping the future of transportation.</p>
+
+    <div class="content-box">
+        <h2 class="section-heading">Key Benefits of Electric Vehicles</h2>
+        <div class="feature-grid">
+            <div class="stat-card">
+                <div class="highlight-number">0</div>
+                <h3 class="font-semibold">Direct Emissions</h3>
+                <p class="text-gray-600">Zero tailpipe emissions for cleaner air</p>
+            </div>
+            <div class="stat-card">
+                <div class="highlight-number">50%</div>
+                <h3 class="font-semibold">Lower Costs</h3>
+                <p class="text-gray-600">Reduced operating and maintenance expenses</p>
+            </div>
+            <div class="stat-card">
+                <div class="highlight-number">100%</div>
+                <h3 class="font-semibold">Torque</h3>
+                <p class="text-gray-600">Instant acceleration and smooth driving</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <h2 class="section-heading">EV Market Growth</h2>
+        <div class="eco-stats">
+            <div class="eco-stat-card">
+                <div class="highlight-number">2x</div>
+                <p>Global EV sales growth in 2023</p>
+            </div>
+            <div class="eco-stat-card">
+                <div class="highlight-number">10M+</div>
+                <p>EVs sold worldwide</p>
+            </div>
+            <div class="eco-stat-card">
+                <div class="highlight-number">30%</div>
+                <p>Annual market growth</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2 class="section-heading">Charging Infrastructure</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="charging-card">
+                <h3 class="font-semibold mb-2">Level 1 Charging</h3>
+                <p class="text-gray-600 mb-3">Standard home charging using 120V outlet</p>
+                <ul class="list-content">
+                    <li>Overnight charging</li>
+                    <li>3-5 miles per hour</li>
+                    <li>No installation needed</li>
+                </ul>
+            </div>
+            <div class="charging-card">
+                <h3 class="font-semibold mb-2">Level 2 Charging</h3>
+                <p class="text-gray-600 mb-3">Enhanced 240V charging solution</p>
+                <ul class="list-content">
+                    <li>25-30 miles per hour</li>
+                    <li>Home & public stations</li>
+                    <li>Professional installation</li>
+                </ul>
+            </div>
+            <div class="charging-card">
+                <h3 class="font-semibold mb-2">DC Fast Charging</h3>
+                <p class="text-gray-600 mb-3">Rapid charging for long trips</p>
+                <ul class="list-content">
+                    <li>80% charge in 30 mins</li>
+                    <li>Public charging stations</li>
+                    <li>High-power output</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2 class="section-heading">Range and Technology</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="info-box">
+                <h3 class="font-semibold mb-3">Current Capabilities</h3>
+                <ul class="benefit-list">
+                    <li>300+ miles per charge range</li>
+                    <li>Advanced battery management</li>
+                    <li>Smart charging optimization</li>
+                    <li>Regenerative braking</li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h3 class="font-semibold mb-3">Future Technology</h3>
+                <ul class="benefit-list">
+                    <li>Solid-state batteries</li>
+                    <li>Ultra-fast charging</li>
+                    <li>Extended battery life</li>
+                    <li>Vehicle-to-grid systems</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2 class="section-heading">Environmental Impact</h2>
+        <div class="eco-stats">
+            <div class="eco-stat-card">
+                <i class="fas fa-leaf text-4xl text-green-600 mb-3"></i>
+                <h3 class="font-semibold">Reduced CO2</h3>
+                <p>Lower carbon footprint</p>
+            </div>
+            <div class="eco-stat-card">
+                <i class="fas fa-wind text-4xl text-green-600 mb-3"></i>
+                <h3 class="font-semibold">Clean Air</h3>
+                <p>Zero local emissions</p>
+            </div>
+            <div class="eco-stat-card">
+                <i class="fas fa-recycle text-4xl text-green-600 mb-3"></i>
+                <h3 class="font-semibold">Sustainable</h3>
+                <p>Recyclable components</p>
+            </div>
+            <div class="eco-stat-card">
+                <i class="fas fa-volume-mute text-4xl text-green-600 mb-3"></i>
+                <h3 class="font-semibold">Quiet</h3>
+                <p>Reduced noise pollution</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-articles">
+        <h3 class="text-2xl font-semibold mb-6">Explore More</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="{{ url_for('ai_in_cars') }}" class="related-card">
+                <i class="fas fa-robot text-3xl text-blue-600 mb-3"></i>
+                <h4 class="font-medium text-lg mb-2">AI in Modern Cars</h4>
+                <p class="text-gray-600">Smart features revolutionizing driving</p>
+            </a>
+            <a href="{{ url_for('car_maintenance_tips') }}" class="related-card">
+                <i class="fas fa-tools text-3xl text-blue-600 mb-3"></i>
+                <h4 class="font-medium text-lg mb-2">EV Maintenance</h4>
+                <p class="text-gray-600">Keep your EV in perfect condition</p>
+            </a>
+            <a href="{{ url_for('choosing_right_car') }}" class="related-card">
+                <i class="fas fa-car text-3xl text-blue-600 mb-3"></i>
+                <h4 class="font-medium text-lg mb-2">Choose Your EV</h4>
+                <p class="text-gray-600">Find your perfect electric vehicle</p>
+            </a>
+        </div>
+    </div>
+</article>
+{% endblock %} 

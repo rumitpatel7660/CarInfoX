@@ -4,7 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CarInfoX</title>
+    <title>User Dashboard - Manage Your Car Preferences | CarInfoX</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Access your personalized car dashboard. View your saved cars, preferences, and get customized car recommendations based on your interests and search history.">
+    <meta name="keywords" content="car dashboard, user preferences, saved cars, car history, personalized recommendations, car profile, automotive dashboard">
+    <meta name="author" content="CarInfoX">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="User Dashboard - Manage Your Car Preferences | CarInfoX">
+    <meta property="og:description" content="Access your personalized car dashboard and manage your car preferences, saved vehicles, and recommendations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://carinfox.com/dashboard">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Title Icon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -785,26 +796,44 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="form-group">
                                     <label for="car_company">Car Company*</label>
-                                    <select class="form-control" id="car_company" name="car_company" required>
+                                    <select class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200" id="car_company" name="car_company" required>
                                         <option value="">Select Company</option>
                                         {% for company in companies %}
                                             <option value="{{ company }}">{{ company }}</option>
                                         {% endfor %}
+                                        <option value="others">Others</option>
                                     </select>
+                                    <div id="other_company_div" class="mt-2 hidden">
+                                        <input type="text" id="other_company" name="other_company" 
+                                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                            placeholder="Enter company name">
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Model</label>
-                                    <input type="text" name="car_model" required 
-                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
-                                        placeholder="Enter car model (e.g., Rapid)">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Model*</label>
+                                    <select id="car_model" name="car_model" required class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200">
+                                        <option value="">Select Model</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                    <div id="other_model_div" class="mt-2 hidden">
+                                        <input type="text" id="other_model" name="other_model" 
+                                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                            placeholder="Enter model name">
+                                    </div>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="form-group">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Variant</label>
-                                    <input type="text" name="car_new_name" required 
-                                        class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
-                                        placeholder="Enter car variant (e.g., 1.5 TDI Ambition)">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Car Variant*</label>
+                                    <select id="car_new_name" name="car_new_name" required class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200">
+                                        <option value="">Select Variant</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                    <div id="other_variant_div" class="mt-2 hidden">
+                                        <input type="text" id="other_variant" name="other_variant" 
+                                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-all duration-200"
+                                            placeholder="Enter variant name">
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturing Year</label>
@@ -1011,6 +1040,132 @@
 
         // Add blob animation
         document.addEventListener('DOMContentLoaded', function () {
+            // Car company change handler
+            const carCompanySelect = document.getElementById('car_company');
+            const otherCompanyDiv = document.getElementById('other_company_div');
+            const otherCompanyInput = document.getElementById('other_company');
+            
+            carCompanySelect.addEventListener('change', function() {
+                if (this.value === 'others') {
+                    otherCompanyDiv.classList.remove('hidden');
+                    otherCompanyInput.required = true;
+                } else {
+                    otherCompanyDiv.classList.add('hidden');
+                    otherCompanyInput.required = false;
+                    otherCompanyInput.value = '';
+                }
+                // Reset and update model dropdown
+                updateModelDropdown(this.value);
+            });
+
+            // Car model change handler
+            const carModelSelect = document.getElementById('car_model');
+            const otherModelDiv = document.getElementById('other_model_div');
+            const otherModelInput = document.getElementById('other_model');
+            
+            carModelSelect.addEventListener('change', function() {
+                if (this.value === 'others') {
+                    otherModelDiv.classList.remove('hidden');
+                    otherModelInput.required = true;
+                } else {
+                    otherModelDiv.classList.add('hidden');
+                    otherModelInput.required = false;
+                    otherModelInput.value = '';
+                }
+                // Reset and update variant dropdown
+                updateVariantDropdown(carCompanySelect.value, this.value);
+            });
+
+            // Car variant change handler
+            const carVariantSelect = document.getElementById('car_new_name');
+            const otherVariantDiv = document.getElementById('other_variant_div');
+            const otherVariantInput = document.getElementById('other_variant');
+            
+            carVariantSelect.addEventListener('change', function() {
+                if (this.value === 'others') {
+                    otherVariantDiv.classList.remove('hidden');
+                    otherVariantInput.required = true;
+                } else {
+                    otherVariantDiv.classList.add('hidden');
+                    otherVariantInput.required = false;
+                    otherVariantInput.value = '';
+                }
+            });
+
+            // Function to update model dropdown
+            function updateModelDropdown(company) {
+                // Clear existing options except the first and "Others"
+                while (carModelSelect.options.length > 2) {
+                    carModelSelect.remove(2);
+                }
+                
+                if (company && company !== 'others') {
+                    // Fetch models for selected company from backend
+                    fetch(`/get_models/${company}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(model => {
+                                const option = document.createElement('option');
+                                option.value = model;
+                                option.textContent = model;
+                                carModelSelect.insertBefore(option, carModelSelect.lastChild);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching models:', error));
+                }
+            }
+
+            // Function to update variant dropdown
+            function updateVariantDropdown(company, model) {
+                // Clear existing options except the first and "Others"
+                while (carVariantSelect.options.length > 2) {
+                    carVariantSelect.remove(2);
+                }
+                
+                if (company && company !== 'others' && model && model !== 'others') {
+                    // Fetch variants for selected company and model from backend
+                    fetch(`/get_variants/${company}/${model}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(variant => {
+                                const option = document.createElement('option');
+                                option.value = variant;
+                                option.textContent = variant;
+                                carVariantSelect.insertBefore(option, carVariantSelect.lastChild);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching variants:', error));
+                }
+            }
+
+            // Form submission handler modification
+            const carSurveyForm = document.getElementById('carSurveyForm');
+            carSurveyForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                
+                // Handle "Others" options
+                if (formData.get('car_company') === 'others') {
+                    formData.set('car_company', formData.get('other_company'));
+                }
+                if (formData.get('car_model') === 'others') {
+                    formData.set('car_model', formData.get('other_model'));
+                }
+                if (formData.get('car_new_name') === 'others') {
+                    formData.set('car_new_name', formData.get('other_variant'));
+                }
+                
+                // Remove the "other_" fields from formData
+                formData.delete('other_company');
+                formData.delete('other_model');
+                formData.delete('other_variant');
+                
+                // Continue with the rest of your form submission logic
+                // ... existing form submission code ...
+            });
+
             // Price Trends Chart with Company Filter
             const allPriceData = JSON.parse('{{ price_data|tojson|safe }}');
             const priceCtx = document.getElementById('priceTrendsChart').getContext('2d');
