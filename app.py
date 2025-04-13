@@ -1379,12 +1379,16 @@ def faq():
 @app.route('/get_car_data')
 def get_car_data():
     try:
-        # Add caching headers
-        response = make_response()
-        response.headers['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
-        
+        # Check if data is already cached
+        cached_data = mongo.db.car_data_cache.find_one({})
+        if cached_data and (datetime.utcnow() - cached_data['last_updated']).total_seconds() < 3600:
+            return jsonify({
+                'car_models': cached_data['car_models'],
+                'car_variants': cached_data['car_variants']
+            })
+
         # Get car companies with a limit to prevent memory issues
-        car_companies = car_data.distinct('car_company', limit=100)
+        car_companies = car_data.distinct('car_company', limit=50)  # Reduced from 100 to 50
         
         # Get car models and variants with pagination
         car_models = {}
@@ -1393,7 +1397,7 @@ def get_car_data():
         for company in car_companies:
             try:
                 # Get models with a limit
-                models = car_data.distinct('car_model', {'car_company': company}, limit=50)
+                models = car_data.distinct('car_model', {'car_company': company}, limit=30)  # Reduced from 50 to 30
                 car_models[company] = models
                 
                 # Get variants for each model with a limit
@@ -1401,11 +1405,24 @@ def get_car_data():
                     variants = car_data.distinct('car_new_name', {
                         'car_company': company,
                         'car_model': model
-                    }, limit=20)
+                    }, limit=15)  # Reduced from 20 to 15
                     car_variants[model] = variants
             except Exception as e:
                 print(f"Error processing company {company}: {str(e)}")
                 continue
+        
+        # Cache the results
+        mongo.db.car_data_cache.update_one(
+            {},
+            {
+                '$set': {
+                    'car_models': car_models,
+                    'car_variants': car_variants,
+                    'last_updated': datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
         
         return jsonify({
             'car_models': car_models,
