@@ -476,27 +476,23 @@
 
 <body class="bg-gray-50 text-gray-800">
     {% include 'navbar.html' %}
+    
+    <!-- Flash messages container -->
+    <div id="flash-messages" style="display: none;">
+        {{ get_flashed_messages(with_categories=true) | tojson | safe }}
+    </div>
+    
     <div id="alertBox" class="alert"></div>
-    <script>
-        window.onload = function () {
-            const messages = {{ get_flashed_messages(with_categories = true) | tojson | safe
-        }};
-        messages.forEach(([category, message]) => {
-            showMessage(message, category);
-        });
-    };
-    </script>
 
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Compare Cars</h1>
-            <p class="text-xl text-blue-100">Make an informed decision by comparing your favorite vehicles side by side
-            </p>
+            <p class="text-xl text-blue-100">Make an informed decision by comparing your favorite vehicles side by side</p>
         </div>
     </section>
 
-    <!-- After the hero section and before the main content -->
+    <!-- Feature Highlight -->
     <div class="feature-highlight">
         <div class="container mx-auto px-4">
             <div class="flex items-center gap-4">
@@ -505,8 +501,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-gray-800">Smart Comparison</h3>
-                    <p class="text-gray-600">Compare up to 4 cars simultaneously with detailed specifications and
-                        performance metrics</p>
+                    <p class="text-gray-600">Compare up to 4 cars simultaneously with detailed specifications and performance metrics</p>
                 </div>
             </div>
         </div>
@@ -522,12 +517,10 @@
             </div>
 
             <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
-                <button id="addCarBtn"
-                    class="btn-primary text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 text-lg">
+                <button id="addCarBtn" class="btn-primary text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 text-lg">
                     <i class="fas fa-plus"></i> Add Car
                 </button>
-                <button id="compareBtn"
-                    class="btn-primary text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 text-lg">
+                <button id="compareBtn" class="btn-primary text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 text-lg">
                     <i class="fas fa-balance-scale"></i> Compare Cars
                 </button>
             </div>
@@ -588,15 +581,14 @@
                 <div class="flex flex-col items-center text-center">
                     <h3 class="text-2xl font-bold text-gray-800 mb-4">Save Your Comparison</h3>
                     <p class="text-gray-600 mb-6">Keep track of your favorite car comparisons for future reference</p>
-                    <button id="saveBtn"
-                        class="btn-primary text-white font-semibold py-3 px-8 rounded-xl flex items-center gap-3">
+                    <button id="saveBtn" class="btn-primary text-white font-semibold py-3 px-8 rounded-xl flex items-center gap-3">
                         <i class="fas fa-save"></i> Save Comparison
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- After the comparison table -->
+        <!-- Comparison Tips -->
         <div class="comparison-tips">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Comparison Tips</h3>
             <div class="tip-item">
@@ -605,8 +597,7 @@
                 </div>
                 <div>
                     <h4 class="font-medium text-gray-800">Focus on Key Metrics</h4>
-                    <p class="text-sm text-gray-600">Pay special attention to engine power, mileage, and price for the
-                        best comparison</p>
+                    <p class="text-sm text-gray-600">Pay special attention to engine power, mileage, and price for the best comparison</p>
                 </div>
             </div>
             <div class="tip-item">
@@ -615,8 +606,7 @@
                 </div>
                 <div>
                     <h4 class="font-medium text-gray-800">Use Charts</h4>
-                    <p class="text-sm text-gray-600">Visualize differences using the performance charts for better
-                        understanding</p>
+                    <p class="text-sm text-gray-600">Visualize differences using the performance charts for better understanding</p>
                 </div>
             </div>
             <div class="tip-item">
@@ -630,474 +620,19 @@
             </div>
         </div>
 
-        <!-- Add floating action button -->
+        <!-- Floating Action Button -->
         <div class="floating-action-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
             <i class="fas fa-arrow-up"></i>
         </div>
 
-        <!-- Add scroll progress bar -->
+        <!-- Scroll Progress Bar -->
         <div class="scroll-progress" id="scrollProgress"></div>
     </div>
 
     {% include 'footer.html' %}
 
-    <script>
-        // alert box javascript
-        function showMessage(message, type) {
-            let alertBox = document.getElementById("alertBox");
-            alertBox.textContent = message;
-            alertBox.className = "alert " + type;
-            alertBox.style.display = "block";
-
-            setTimeout(() => { alertBox.style.display = "none"; }, 3000);
-        }
-
-        // Comparison.html script page
-        $(document).ready(function () {
-            let engineChart, powerChart, mileageChart;
-            let carCount = 1;
-            const carModels = JSON.parse('{{ car_model | tojson | safe }}');
-            const carVariants = JSON.parse('{{ car_variant | tojson | safe }}');
-
-            console.log("Car Models Loaded:", carModels);
-            console.log("Car Variants Loaded:", carVariants);
-
-            function createCarSelectionCard(index) {
-                return `
-        <div class="card bg-gray-100 p-4 rounded-lg shadow-md car-selection-card" data-index="${index}">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-xl font-semibold">Select Car ${index}</h2>
-                ${index > 1 ? `<button class="remove-car-btn text-red-500 hover:text-red-700">
-                    <i class="fas fa-minus-circle"></i>
-                </button>` : ''}
-            </div>
-            <select class="car-company-select w-full p-2 border rounded mt-2">
-                <option value="">Select Car Company</option>
-                {% for car in car_company %}
-                <option value="{{ car }}">{{ car }}</option>
-                {% endfor %}
-            </select>
-            <select class="car-model-select w-full p-2 border rounded mt-2" disabled>
-                <option value="">Select Car Model</option>
-            </select>
-            <select class="car-variant-select w-full p-2 border rounded mt-2" disabled>
-                <option value="">Select Car Variant</option>
-            </select>
-        </div>`;
-            }
-
-            $("#carSelectionContainer").append(createCarSelectionCard(1));
-
-            $(document).on('change', '.car-company-select', function () {
-                let selectedCompany = $(this).val();
-                let modelDropdown = $(this).closest('.car-selection-card').find('.car-model-select');
-
-                console.log("Selected Company:", selectedCompany);
-
-                modelDropdown.html('<option value="">Select Car Model</option>');
-
-                if (selectedCompany && carModels[selectedCompany]) {
-                    console.log("Models found for:", selectedCompany, carModels[selectedCompany]);
-                    modelDropdown.prop('disabled', false); // ✅ Enable dropdown
-                    carModels[selectedCompany].forEach(model => {
-                        modelDropdown.append(`<option value="${model}">${model}</option>`);
-                    });
-                } else {
-                    console.warn("No models found for company:", selectedCompany);
-                    modelDropdown.prop('disabled', true);
-                }
-
-                let variantDropdown = $(this).closest('.car-selection-card').find('.car-variant-select');
-                variantDropdown.prop('disabled', true).html('<option value="">Select Car Variant</option>');
-            });
-
-            $(document).on('change', '.car-model-select', function () {
-                let selectedModel = $(this).val();
-                let variantDropdown = $(this).closest('.car-selection-card').find('.car-variant-select');
-
-                console.log("Selected Model:", selectedModel);
-
-                variantDropdown.html('<option value="">Select Car Variant</option>');
-
-                if (selectedModel && carVariants[selectedModel]) {
-                    console.log("Variants found for:", selectedModel, carVariants[selectedModel]);
-                    variantDropdown.prop('disabled', false); // ✅ Enable dropdown
-                    carVariants[selectedModel].forEach(variant => {
-                        variantDropdown.append(`<option value="${variant}">${variant}</option>`);
-                    });
-                } else {
-                    console.warn("No variants found for model:", selectedModel);
-                    variantDropdown.prop('disabled', true);
-                }
-            });
-
-            $("#addCarBtn").click(function () {
-                if (carCount < 4) {
-                    carCount++;
-                    $("#carSelectionContainer").append(createCarSelectionCard(carCount));
-                    if (carCount === 4) {
-                        $("#addCarBtn").prop('disabled', true);
-                    }
-                }
-            });
-
-            // Remove car button click handler
-            $(document).on('click', '.remove-car-btn', function () {
-                $(this).closest('.car-selection-card').remove();
-                carCount--;
-                $("#addCarBtn").prop('disabled', false);
-
-                // Reindex remaining cards
-                $('.car-selection-card').each(function (index) {
-                    $(this).attr('data-index', index + 1);
-                    $(this).find('h2').text(`Select Car ${index + 1}`);
-                });
-            });
-
-            function formatCarName(carName) {
-                return carName.split(" ").slice(0, 2).join(" ");
-            }
-
-            function updateChart(cars, response) {
-                const ctxEngine = document.getElementById("engineChart").getContext("2d");
-                const ctxPower = document.getElementById("powerChart").getContext("2d");
-                const ctxMileage = document.getElementById("mileageChart").getContext("2d");
-
-                if (engineChart) engineChart.destroy();
-                if (mileageChart) mileageChart.destroy();
-                if (powerChart) powerChart.destroy();
-
-                const carColors = [
-                    "rgb(59, 130, 246)",    // Blue
-                    "rgb(16, 185, 129)",    // Green
-                    "rgb(245, 158, 11)",    // Amber
-                    "rgb(239, 68, 68)"      // Red
-                ];
-
-                // Create datasets for each chart
-                const datasets = cars.map((car, index) => {
-                    const carData = response[`car${index + 1}`];
-                    if (!carData) return null;
-                    return {
-                        label: formatCarName(car),
-                        backgroundColor: carColors[index],
-                        borderColor: carColors[index],
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        barThickness: 30,
-                        data: [carData.engine]
-                    };
-                }).filter(dataset => dataset !== null);
-
-                const mileageDatasets = cars.map((car, index) => {
-                    const carData = response[`car${index + 1}`];
-                    if (!carData) return null;
-                    return {
-                        label: formatCarName(car),
-                        backgroundColor: carColors[index],
-                        borderColor: carColors[index],
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        barThickness: 30,
-                        data: [carData.mileage]
-                    };
-                }).filter(dataset => dataset !== null);
-
-                const powerDatasets = cars.map((car, index) => {
-                    const carData = response[`car${index + 1}`];
-                    if (!carData) return null;
-                    return {
-                        label: formatCarName(car),
-                        backgroundColor: carColors[index],
-                        borderColor: carColors[index],
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        barThickness: 30,
-                        data: [carData.max_power]
-                    };
-                }).filter(dataset => dataset !== null);
-
-                // Common chart options
-                const chartOptions = {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                padding: 20,
-                                font: {
-                                    size: 12,
-                                    family: "'Poppins', sans-serif"
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: {
-                                size: 14,
-                                family: "'Poppins', sans-serif"
-                            },
-                            bodyFont: {
-                                size: 13,
-                                family: "'Poppins', sans-serif"
-                            },
-                            padding: 12,
-                            cornerRadius: 8,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) {
-                                    return `${context.dataset.label}: ${context.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                font: {
-                                    family: "'Poppins', sans-serif",
-                                    size: 12
-                                },
-                                padding: 10
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    family: "'Poppins', sans-serif",
-                                    size: 12
-                                },
-                                padding: 10
-                            }
-                        }
-                    },
-                    barPercentage: 0.4,
-                    categoryPercentage: 0.9,
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart'
-                    }
-                };
-
-                // Engine Power Chart
-                engineChart = new Chart(ctxEngine, {
-                    type: "bar",
-                    data: {
-                        labels: ["Engine Power (CC)"],
-                        datasets: datasets
-                    },
-                    options: chartOptions
-                });
-
-                // Mileage Chart
-                mileageChart = new Chart(ctxMileage, {
-                    type: "bar",
-                    data: {
-                        labels: ["Mileage (kmpl)"],
-                        datasets: mileageDatasets
-                    },
-                    options: chartOptions
-                });
-
-                // Max Power Chart
-                powerChart = new Chart(ctxPower, {
-                    type: "bar",
-                    data: {
-                        labels: ["Max Power (bhp)"],
-                        datasets: powerDatasets
-                    },
-                    options: chartOptions
-                });
-
-                // Show performance section
-                $(".performance").show();
-            }
-
-            function getCarName(company,model,variant){
-                if(!company || !model || !variant) return null;
-                return `${company} ${model} ${variant}`;
-            }
-
-
-            // Compare button click handler
-            $("#compareBtn").click(function () {
-                const selectedCars = {};
-                let validSelcetions=0;
-                $('.car-selection-card').each(function (index) {
-                    const carCompany = $(this).find('.car-company-select').val();
-                    const carModel = $(this).find('.car-model-select').val();
-                    const carVariant = $(this).find('.car-variant-select').val();
-                    const carName=getCarName(carCompany,carModel,carVariant);
-
-                    if (carName) {
-                        selectedCars[`car${index + 1}`] = carName;
-                        validSelcetions++;
-                    }
-                });
-
-                if (validSelcetions < 2) {
-                    showMessage("Please select at least 2 cars to compare", "error");
-                    return;
-                }
-
-                console.log("Sending data to server:", selectedCars); // Debug log
-
-                // Send comparison request
-                $.ajax({
-                    url: '/compare_cars',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(selectedCars),
-                    success: function (response) {
-                        console.log("Server response:", response); // Debug log
-                        if (response.error) {
-                            showMessage(response.error, "error");
-                            return;
-                        }
-
-                        // Show the comparison sections
-                        $('.performance').show();
-
-                        // Update comparison table
-                        updateComparisonTable(selectedCars, response);
-
-                        // Update charts
-                        updateChart(Object.values(selectedCars), response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error details:", {
-                            status: xhr.status,
-                            responseText: xhr.responseText,
-                            error: error
-                        }); // Detailed error logging
-                        showMessage("Error comparing cars: " + (xhr.responseJSON?.error || error), "error");
-                    }
-                });
-            });
-
-            function updateComparisonTable(selectedCars, response) {
-                const thead = $("#comparisonTable table thead tr");
-                const tbody = $("#comparisonTableBody");
-
-                // Clear existing content
-                thead.find("th:not(:first)").remove();
-                tbody.empty();
-
-                // Add headers for selected cars
-                Object.values(selectedCars).forEach(car => {
-                    thead.append(`<th class="border p-2">${formatCarName(car)}</th>`);
-                });
-
-                // Add rows for each specification
-                const specs = [
-                    { key: 'car_company', label: 'Company' },
-                    { key: 'car_model', label: 'Model' },
-                    { key: 'engine', label: 'Engine (CC)' },
-                    { key: 'mileage', label: 'Mileage (kmpl)' },
-                    { key: 'max_power', label: 'Max Power (bhp)' },
-                    { key: 'torque', label: 'Torque' },
-                    { key: 'seats', label: 'Seats' },
-                    { key: 'fuel_type', label: 'Fuel Type' },
-                    { key: 'transmission', label: 'Transmission' },
-                    { key: 'selling_price', label: 'Price' },
-                    { key: 'year', label: 'Year' }
-                ];
-
-                specs.forEach(spec => {
-                    const row = $('<tr>');
-                    row.append(`<td class="border p-2 font-semibold">${spec.label}</td>`);
-
-                    Object.keys(selectedCars).forEach(carKey => {
-                        const carData = response[carKey];
-                        row.append(`<td class="border p-2">${carData[spec.key]}</td>`);
-                    });
-
-                    tbody.append(row);
-                });
-            }
-
-            $("#saveBtn").click(function () {
-                // Get the current comparison data
-                const selectedCars = {};
-                let comparisonDetails = {};
-                let validSelcetions=0;
-                $('.car-selection-card').each(function (index) {
-                    const carCompany = $(this).find('.car-company-select').val();
-                    const carModel = $(this).find('.car-model-select').val();
-                    const carVariant = $(this).find('.car-variant-select').val();
-                    const carName=getCarName(carCompany,carModel,carVariant);
-
-                    if (carName) {
-                        selectedCars[`car${index + 1}`] = carName;
-                        validSelcetions++;
-                    }
-                });
-
-                // Get the comparison details from the table
-                const specs = {};
-                $("#comparisonTableBody tr").each(function () {
-                    const specName = $(this).find('td:first').text();
-                    const values = {};
-                    $(this).find('td:not(:first)').each(function (index) {
-                        values[`car${index + 1}`] = $(this).text();
-                    });
-                    specs[specName] = values;
-                });
-
-                // Prepare the data for saving
-                const saveData = {
-                    cars: selectedCars,
-                    details: {
-                        specifications: specs,
-                        timestamp: new Date().toISOString()
-                    }
-                };
-
-                // Send save request
-                $.ajax({
-                    url: "/save_comparison",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(saveData),
-                    success: function (response) {
-                        showMessage("Comparison saved successfully!", "success");
-                    },
-                    error: function (xhr) {
-                        console.error("Server Error:", xhr.responseText);
-                        showMessage("Error saving comparison. Please try again.", "error");
-                    }
-                });
-            });
-        });
-
-        // Add scroll progress functionality
-        window.addEventListener('scroll', () => {
-            const scrollProgress = document.getElementById('scrollProgress');
-            const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            scrollProgress.style.transform = `scaleX(${scrollPercent / 100})`;
-        });
-
-        // Show/hide floating action button based on scroll
-        const floatingButton = document.querySelector('.floating-action-button');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                floatingButton.style.opacity = '1';
-                floatingButton.style.transform = 'translateY(0)';
-            } else {
-                floatingButton.style.opacity = '0';
-                floatingButton.style.transform = 'translateY(20px)';
-            }
-        });
-    </script>
+    <!-- Load JavaScript files -->
+    <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 </body>
 
 </html>
