@@ -18,12 +18,95 @@ function initializePage() {
 
 // Load car data asynchronously
 function loadCarData() {
-    $.get('/get_car_data', function(data) {
-        carModels = data.car_models;
-        carVariants = data.car_variants;
-        console.log("Car data loaded successfully");
-    }).fail(function(error) {
-        console.error("Error loading car data:", error);
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = 2000; // 2 seconds
+    const loadingIndicator = $("#loadingIndicator");
+    const errorMessage = $("#errorMessage");
+
+    function attemptLoad() {
+        loadingIndicator.show();
+        errorMessage.hide();
+        
+        $.ajax({
+            url: '/get_car_data',
+            method: 'GET',
+            timeout: 30000, // Increased timeout to 30 seconds
+            success: function(data) {
+                if (data.error) {
+                    showMessage(data.error, "error");
+                    return;
+                }
+                try {
+                    // Process data in chunks to prevent UI freezing
+                    processDataInChunks(data);
+                } catch (e) {
+                    console.error("Error processing car data:", e);
+                    showMessage("Error processing car data. Please try again.", "error");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading car data:", error);
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    console.log(`Retrying... Attempt ${retryCount} of ${maxRetries}`);
+                    setTimeout(attemptLoad, retryDelay * retryCount); // Exponential backoff
+                } else {
+                    errorMessage.text("Failed to load car data. Please refresh the page.").show();
+                }
+            },
+            complete: function() {
+                loadingIndicator.hide();
+            }
+        });
+    }
+
+    function processDataInChunks(data) {
+        // Process companies in chunks
+        const companies = Object.keys(data.car_models);
+        const chunkSize = 5;
+        
+        function processChunk(startIndex) {
+            const endIndex = Math.min(startIndex + chunkSize, companies.length);
+            const chunk = companies.slice(startIndex, endIndex);
+            
+            chunk.forEach(company => {
+                carModels[company] = data.car_models[company];
+                // Process variants for this company's models
+                data.car_models[company].forEach(model => {
+                    carVariants[model] = data.car_variants[model] || [];
+                });
+            });
+            
+            // Update UI progress
+            const progress = Math.min(100, Math.round((endIndex / companies.length) * 100));
+            loadingIndicator.text(`Loading data... ${progress}%`);
+            
+            if (endIndex < companies.length) {
+                // Process next chunk after a short delay
+                setTimeout(() => processChunk(endIndex), 100);
+            } else {
+                // All data processed, initialize UI
+                console.log("Car data loaded successfully");
+                $("#carSelectionContainer").append(createCarSelectionCard(1));
+                populateCompanyDropdowns();
+            }
+        }
+        
+        processChunk(0);
+    }
+
+    attemptLoad();
+}
+
+// Populate company dropdowns
+function populateCompanyDropdowns() {
+    $('.car-company-select').each(function() {
+        const $select = $(this);
+        $select.empty().append('<option value="">Select Car Company</option>');
+        Object.keys(carModels).sort().forEach(company => {
+            $select.append(`<option value="${company}">${company}</option>`);
+        });
     });
 }
 
