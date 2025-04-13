@@ -1,4 +1,4 @@
-from flask import Flask,render_template, request, redirect, flash, session,url_for, jsonify
+from flask import Flask,render_template, request, redirect, flash, session,url_for, jsonify, make_response
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -1379,30 +1379,41 @@ def faq():
 @app.route('/get_car_data')
 def get_car_data():
     try:
-        # Get car companies
-        car_companies = car_data.distinct('car_company')
+        # Add caching headers
+        response = make_response()
+        response.headers['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
         
-        # Get car models and variants
+        # Get car companies with a limit to prevent memory issues
+        car_companies = car_data.distinct('car_company', limit=100)
+        
+        # Get car models and variants with pagination
         car_models = {}
         car_variants = {}
         
         for company in car_companies:
-            models = car_data.distinct('car_model', {'car_company': company})
-            car_models[company] = models
-            
-            for model in models:
-                variants = car_data.distinct('car_variant', {
-                    'car_company': company,
-                    'car_model': model
-                })
-                car_variants[model] = variants
+            try:
+                # Get models with a limit
+                models = car_data.distinct('car_model', {'car_company': company}, limit=50)
+                car_models[company] = models
+                
+                # Get variants for each model with a limit
+                for model in models:
+                    variants = car_data.distinct('car_new_name', {
+                        'car_company': company,
+                        'car_model': model
+                    }, limit=20)
+                    car_variants[model] = variants
+            except Exception as e:
+                print(f"Error processing company {company}: {str(e)}")
+                continue
         
         return jsonify({
             'car_models': car_models,
             'car_variants': car_variants
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in get_car_data: {str(e)}")
+        return jsonify({'error': 'An error occurred while fetching car data'}), 500
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)) ,debug=True)
