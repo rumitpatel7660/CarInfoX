@@ -1371,5 +1371,38 @@ def car_maintenance_tips():
 def choosing_right_car():
     return render_template('blogs/choosing_right_car.html')
 
+@app.route('/faq')
+def faq():
+    user = get_current_user()
+    return render_template('faq.html', user=user)
+
+@app.route('/get_car_data')
+def get_car_data():
+    try:
+        # Get car companies
+        car_companies = car_data.distinct('car_company')
+        
+        # Get car models and variants
+        car_models = {}
+        car_variants = {}
+        
+        for company in car_companies:
+            models = car_data.distinct('car_model', {'car_company': company})
+            car_models[company] = models
+            
+            for model in models:
+                variants = car_data.distinct('car_variant', {
+                    'car_company': company,
+                    'car_model': model
+                })
+                car_variants[model] = variants
+        
+        return jsonify({
+            'car_models': car_models,
+            'car_variants': car_variants
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)) ,debug=True)
